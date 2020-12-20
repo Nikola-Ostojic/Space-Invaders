@@ -7,7 +7,7 @@ WINDOW_HEIGTH = 720
 class Enemy(QtWidgets.QLabel):
     def __init__(self, parent = None):
         super().__init__(parent)
-        self.setPixmap(QPixmap('assets/enemy.png').scaled(100, 100))
+        self.setPixmap(QPixmap('assets/enemy1.png').scaled(50, 50))
 
     # def keyPressEvent(self, event):
 

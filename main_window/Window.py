@@ -25,35 +25,21 @@ class Window(QWidget):
 
         self.set_background()
 
-        # centralW = QtWidgets.QWidget()
-        # self.setCentralWidget(centralW)       
-
-        # self.player = Player()       
-        
-        # layout = QtWidgets.QVBoxLayout(centralW)
-        # layout.addWidget(self.player)
-        # self.player.setFocus()       
-
-        # self.setLayout(layout)
-        
-
-        # self.addWidget(self.player)
-        # self.player.setFocus()
-        # self.player.move(300, 0)
-
-        # for i in range(5):
-        #     self.addWidget(Enemy())
-
-        # self.set_layout(centralW)
-
         lbl1 = Player(self)
-        # lbl1.setPixmap(QPixmap('assets/ship.png').scaled(50, 50))
-        lbl1.move(220, 600)
+        lbl1.move(520, 600)
         lbl1.setFocus()
 
-        
+        labele = []
+        labele.append(Enemy(self))
+        labele[0].move(100, 100)
 
-   
+        for i in range(1, 33):
+            labele.append(Enemy(self))
+            if i % 11 == 0:
+                labele[i].move(labele[0].x(), labele[i].y() + 100)
+            labele[i].move(labele[i - 1].x() + 100, labele[i - 1].y())
+
+        
 
     def set_background(self):
         background = QImage('assets/background.png')
