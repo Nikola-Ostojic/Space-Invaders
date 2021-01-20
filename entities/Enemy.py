@@ -1,3 +1,25 @@
+import sys
+from PyQt5.QtCore import (
+    Qt,
+    QBasicTimer
+)
+from PyQt5.QtGui import (
+    QBrush,
+    QPixmap
+)
+from PyQt5.QtWidgets import (
+    QApplication,
+    QGraphicsItem,
+    QGraphicsPixmapItem,
+    QGraphicsRectItem,
+    QGraphicsScene,
+    QGraphicsView
+)
+class Enemy(QGraphicsPixmapItem):
+    def __init__(self):
+        QGraphicsPixmapItem.__init__(self)
+        self.setPixmap(QPixmap('assets/enemy2.png').scaled(50, 50))
+
 from PyQt5.QtGui import QIcon, QPixmap
 from PyQt5 import QtCore, QtWidgets
 
@@ -8,6 +30,7 @@ class Enemy(QtWidgets.QLabel):
     def __init__(self, parent = None):
         super().__init__(parent)
         self.setPixmap(QPixmap('assets/enemy1.png').scaled(50, 50))
+
 
     # def keyPressEvent(self, event):
 
