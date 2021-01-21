@@ -1,3 +1,4 @@
+import time
 from PyQt5.QtGui import QImage, QPalette, QBrush
 from PyQt5 import QtWidgets
 from PyQt5.QtCore import Qt
@@ -36,6 +37,10 @@ class Window(QGraphicsScene):
     
     def __init__(self, parent = None):
         QGraphicsScene.__init__(self, parent)
+
+        
+        self.threadWorking = True
+        
 
         # hold the set of keys we're pressing
         self.keys_pressed = set()
@@ -77,7 +82,6 @@ class Window(QGraphicsScene):
             self.addItem(enemies[i])
 
         #Dodavanje stitova
-
         shields = []
         shields.append(Shield())
         shields[0].setPos(50, 350)
@@ -94,7 +98,8 @@ class Window(QGraphicsScene):
         self.view.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.view.show()
         self.view.setFixedSize(WINDOW_WIDTH,WINDOW_HEIGHT)
-        self.setSceneRect(0,0,WINDOW_WIDTH,WINDOW_HEIGHT)
+        self.setSceneRect(0,0,WINDOW_WIDTH,WINDOW_HEIGHT)  
+            
 
     def keyPressEvent(self, event):
         self.keys_pressed.add(event.key())
