@@ -53,12 +53,32 @@ class Window(QGraphicsScene):
 
         # Test 1 enemy
         # PROVERI ZASTO NE RADI ENEMY
-        #self.enemy = Enemy()
-        #self.enemy.setPos(400, 525)
+        # self.enemy = Enemy()
+        # self.enemy.setPos(400, 525)
 
         for b in self.bullets:
             b.setPos(WINDOW_WIDTH,WINDOW_HEIGHT)
             self.addItem(b)
+
+        enemies = []
+        enemies.append(Enemy())
+        enemies[0].setPos(100, 50)
+
+        for i in range(0, 33):
+            enemies.append(Enemy())
+            if i == 11:
+                enemies[i].setPos(enemies[0].x(), enemies[0].y() + 100)
+                continue
+            if i == 22:
+                 enemies[i].setPos(enemies[11].x(), enemies[11].y() + 100)
+                 continue              
+            enemies[i].setPos(enemies[i - 1].x() + 100, enemies[i - 1].y())
+
+
+        for i in range(0, 33):
+            self.addItem(enemies[i])
+
+
         self.addItem(self.player)
 
         self.view = QGraphicsView(self)
