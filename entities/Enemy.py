@@ -20,18 +20,6 @@ class Enemy(QGraphicsPixmapItem):
         QGraphicsPixmapItem.__init__(self)
         self.setPixmap(QPixmap('assets/enemy2.png').scaled(50, 50))
 
-from PyQt5.QtGui import QIcon, QPixmap
-from PyQt5 import QtCore, QtWidgets
-
-WINDOW_WIDTH = 1280
-WINDOW_HEIGTH = 720
-
-class Enemy(QtWidgets.QLabel):
-    def __init__(self, parent = None):
-        super().__init__(parent)
-        self.setPixmap(QPixmap('assets/enemy1.png').scaled(50, 50))
-
-
     # def keyPressEvent(self, event):
 
     #     if event.key() == QtCore.Qt.Key_A:
