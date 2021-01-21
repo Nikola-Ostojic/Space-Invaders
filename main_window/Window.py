@@ -51,15 +51,14 @@ class Window(QGraphicsScene):
         self.player.setPos(400, 525)
         self.bullets = [Bullet.Bullet(PLAYER_BULLET_X_OFFSETS[0],PLAYER_BULLET_Y)]
 
-        # Test 1 enemy
-        # PROVERI ZASTO NE RADI ENEMY
-        # self.enemy = Enemy()
-        # self.enemy.setPos(400, 525)
 
         for b in self.bullets:
             b.setPos(WINDOW_WIDTH,WINDOW_HEIGHT)
             self.addItem(b)
 
+        self.addItem(self.player)
+
+        # Postavljanje neprijatelja
         enemies = []
         enemies.append(Enemy())
         enemies[0].setPos(100, 50)
@@ -74,12 +73,21 @@ class Window(QGraphicsScene):
                  continue              
             enemies[i].setPos(enemies[i - 1].x() + 100, enemies[i - 1].y())
 
-
         for i in range(0, 33):
             self.addItem(enemies[i])
 
+        #Dodavanje stitova
 
-        self.addItem(self.player)
+        shields = []
+        shields.append(Shield())
+        shields[0].setPos(50, 350)
+        shields.append(Shield())
+        shields[1].setPos(400, 350)
+        shields.append(Shield())
+        shields[2].setPos(700, 350)
+
+        for i in range(0, 3):
+            self.addItem(shields[i])      
 
         self.view = QGraphicsView(self)
         self.view.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)

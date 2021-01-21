@@ -19,4 +19,4 @@ from PyQt5.QtWidgets import (
 class Shield(QGraphicsPixmapItem):
     def __init__(self):
         QGraphicsPixmapItem.__init__(self)
-        self.setPixmap(QPixmap('assets/shields/full.png').scaled(50, 50))
+        self.setPixmap(QPixmap('assets/shields/full.png').scaled(200, 200))
