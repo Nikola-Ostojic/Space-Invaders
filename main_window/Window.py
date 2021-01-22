@@ -1,3 +1,7 @@
+from enemy_actions.EnemyMove import MoveEnemy
+from PyQt5.QtCore import QThread
+import multiprocessing as mp
+
 import time
 from PyQt5.QtGui import QImage, QPalette, QBrush
 from PyQt5 import QtWidgets
@@ -36,10 +40,7 @@ PLAYER_BULLET_Y         = 15
 class Window(QGraphicsScene):
     
     def __init__(self, parent = None):
-        QGraphicsScene.__init__(self, parent)
-
-        
-        self.threadWorking = True
+        QGraphicsScene.__init__(self, parent)      
         
 
         # hold the set of keys we're pressing
@@ -81,6 +82,12 @@ class Window(QGraphicsScene):
         for i in range(0, 33):
             self.addItem(enemies[i])
 
+        # Pomeranje neprijatelja
+        self.moveEnemy = MoveEnemy()
+        self.moveEnemy.calc_done.connect(self.move_enemy)
+        self.moveEnemy.start()
+        
+
         #Dodavanje stitova
         shields = []
         shields.append(Shield())
@@ -100,6 +107,8 @@ class Window(QGraphicsScene):
         self.view.setFixedSize(WINDOW_WIDTH,WINDOW_HEIGHT)
         self.setSceneRect(0,0,WINDOW_WIDTH,WINDOW_HEIGHT)  
             
+    def move_enemy(self, enemyPixMap: QGraphicsPixmapItem, newX, newY):
+        enemyLabel.setPos(newX, newY)
 
     def keyPressEvent(self, event):
         self.keys_pressed.add(event.key())
@@ -120,3 +129,4 @@ class Window(QGraphicsScene):
         loadedPicture = QImage('assets/background.png')
         brushBackground = QBrush(loadedPicture)
         self.setBackgroundBrush(brushBackground)
+
