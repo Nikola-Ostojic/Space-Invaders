@@ -1,3 +1,7 @@
+from enemy_actions.EnemyMove import MoveEnemy
+from PyQt5.QtCore import QThread
+import multiprocessing as mp
+
 import time
 from PyQt5.QtGui import QImage, QPalette, QBrush
 from PyQt5 import QtWidgets
@@ -36,10 +40,7 @@ PLAYER_BULLET_Y         = 15
 class Window(QGraphicsScene):
     
     def __init__(self, parent = None):
-        QGraphicsScene.__init__(self, parent)
-
-        
-        self.threadWorking = True
+        QGraphicsScene.__init__(self, parent)      
         
 
         # hold the set of keys we're pressing
@@ -71,15 +72,23 @@ class Window(QGraphicsScene):
         for i in range(0, 33):
             enemies.append(Enemy())
             if i == 11:
-                enemies[i].setPos(enemies[0].x(), enemies[0].y() + 100)
+                enemies[i].setPos(enemies[0].x(), enemies[0].y() + 60)
                 continue
             if i == 22:
-                 enemies[i].setPos(enemies[11].x(), enemies[11].y() + 100)
+                 enemies[i].setPos(enemies[11].x(), enemies[11].y() + 60)
                  continue              
-            enemies[i].setPos(enemies[i - 1].x() + 100, enemies[i - 1].y())
+            enemies[i].setPos(enemies[i - 1].x() + 60, enemies[i - 1].y())     
 
         for i in range(0, 33):
             self.addItem(enemies[i])
+
+        # Pomeranje neprijatelja
+        self.moveEnemy = MoveEnemy()
+        for i in range(0, 33):
+            self.moveEnemy.add_enemy(enemies[i])
+        self.moveEnemy.calc_done.connect(self.move_enemy)
+        self.moveEnemy.start()
+        
 
         #Dodavanje stitova
         shields = []
@@ -100,6 +109,8 @@ class Window(QGraphicsScene):
         self.view.setFixedSize(WINDOW_WIDTH,WINDOW_HEIGHT)
         self.setSceneRect(0,0,WINDOW_WIDTH,WINDOW_HEIGHT)  
             
+    def move_enemy(self, enemyPixMap: QGraphicsPixmapItem, newX, newY):
+        enemyPixMap.setPos(newX, newY)
 
     def keyPressEvent(self, event):
         self.keys_pressed.add(event.key())
@@ -120,3 +131,4 @@ class Window(QGraphicsScene):
         loadedPicture = QImage('assets/background.png')
         brushBackground = QBrush(loadedPicture)
         self.setBackgroundBrush(brushBackground)
+
