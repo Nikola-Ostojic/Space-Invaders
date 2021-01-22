@@ -9,7 +9,8 @@ from PyQt5.QtWidgets import (
 
 from PyQt5.QtCore import pyqtSignal, QThread, QObject, QTimer
 
-
+import time
+from time import sleep
 
 class MoveEnemy(QObject):
     calc_done = pyqtSignal(QGraphicsPixmapItem, int, int)
@@ -48,20 +49,29 @@ class MoveEnemy(QObject):
             if self.goRight:
                 for i in range(0, 33):
                     #self.enemies[i].setPos(enemies[i - 1].x(), enemies[i - 1].y() + 50)
-                    self.calc_done.emit(enemies[i], enemies[i].x(), enemies[i].y() + 50)
-                    if i == 11 and enemies[i].y() > 849:
+                    #self.calc_done.emit(self.enemies[i], self.enemies[i].x(), self.enemies[i].y() + 50)
+                    self.calc_done.emit(self.enemies[i], self.enemies[i].x() + 10, self.enemies[i].y())
+                    if self.enemies[32].x() > 891:
+                        for i in range(0, 33):
+                            self.calc_done.emit(self.enemies[i], self.enemies[i].x(), self.enemies[i].y() + 5)
+                        time.sleep(1.5)
                         self.goRight = False
                         self.goLeft = True
-                time.sleep(1)
+                        break
+                time.sleep(1.5)
 
             elif self.goLeft:
                 for i in range(0, 33):
                     #self.enemies[i].setPos(enemies[i - 1].x(), enemies[i - 1].y() - 50)
-                    self.calc_done.emit(enemies[i], enemies[i].x(), enemies[i].y() - 50)                
-                    if i == 11 and enemies[i].y() < 49:
+                    self.calc_done.emit(self.enemies[i], self.enemies[i].x() - 10, self.enemies[i].y())                
+                    if self.enemies[11].x() < 5:                    
+                        for i in range(0, 33):
+                            self.calc_done.emit(self.enemies[i], self.enemies[i].x(), self.enemies[i].y() + 5)
+                        time.sleep(1.5)
                         self.goRight = True
                         self.goLeft = False
-                time.sleep(1)
+                        break
+                time.sleep(1.5)
 
 
 
