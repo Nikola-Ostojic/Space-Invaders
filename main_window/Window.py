@@ -1,3 +1,4 @@
+import sys
 import time
 from PyQt5.QtGui import QImage, QPalette, QBrush
 from PyQt5 import QtWidgets
@@ -48,6 +49,8 @@ class Window(QGraphicsScene):
         # use a timer to get 60Hz refresh (hopefully)
         self.timer = QBasicTimer()
         self.timer.start(FRAME_TIME_MS, self)
+
+
 
         # Postavljanje pozadine
         self.set_background()
@@ -120,3 +123,4 @@ class Window(QGraphicsScene):
         loadedPicture = QImage('assets/background.png')
         brushBackground = QBrush(loadedPicture)
         self.setBackgroundBrush(brushBackground)
+
