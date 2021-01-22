@@ -27,7 +27,7 @@ class Game(QMainWindow):
         self.centralWidget.addWidget(self.mainMenu)
         self.centralWidget.setCurrentWidget(self.mainMenu)
 
-        self.resize(240, 250)
+        self.resize(580, 500)
 
 
 
