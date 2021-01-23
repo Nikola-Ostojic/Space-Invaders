@@ -1,4 +1,7 @@
-from enemy_actions.EnemyMove import MoveEnemy
+
+import sys
+
+
 from PyQt5.QtCore import QThread
 import multiprocessing as mp
 
@@ -49,6 +52,8 @@ class Window(QGraphicsScene):
         # use a timer to get 60Hz refresh (hopefully)
         self.timer = QBasicTimer()
         self.timer.start(FRAME_TIME_MS, self)
+
+
 
         # Postavljanje pozadine
         self.set_background()
