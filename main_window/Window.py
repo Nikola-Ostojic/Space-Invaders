@@ -20,8 +20,8 @@ from PyQt5.QtGui import QPixmap
 from PyQt5 import QtGui
 from PyQt5.QtGui import QPainter
 
-from entities import Bullet
-from entities import Bullet2
+from entities.Bullet import Bullet
+from entities.Bullet2 import Bullet2
 
 from PyQt5.QtCore import (
     Qt,
@@ -72,7 +72,7 @@ class Window(QGraphicsScene):
             self.player.setPos(400, 525)
 
             # Pucanje
-            self.bullets = [Bullet.Bullet(PLAYER_BULLET_X_OFFSETS[0],PLAYER_BULLET_Y)]
+            self.bullets = [Bullet(PLAYER_BULLET_X_OFFSETS[0],PLAYER_BULLET_Y)]
 
 
             for b in self.bullets:
@@ -86,7 +86,7 @@ class Window(QGraphicsScene):
             self.player.setPos(400, 525)
 
             # Pucanje
-            self.bullets = [Bullet.Bullet(PLAYER_BULLET_X_OFFSETS[0],PLAYER_BULLET_Y)]
+            self.bullets = [Bullet(PLAYER_BULLET_X_OFFSETS[0],PLAYER_BULLET_Y)]
 
 
             for b in self.bullets:
@@ -99,7 +99,7 @@ class Window(QGraphicsScene):
             self.player2.setPos(100, 525)
 
             # Pucanje
-            self.bullets2 = [Bullet2.Bullet2(PLAYER_BULLET_X_OFFSETS[0],PLAYER_BULLET_Y)]
+            self.bullets2 = [Bullet2(PLAYER_BULLET_X_OFFSETS[0],PLAYER_BULLET_Y)]
 
 
             for d in self.bullets2:

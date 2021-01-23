@@ -19,6 +19,8 @@ from PyQt5.QtWidgets import (
 )
 from PyQt5.QtCore import pyqtSignal
 
+from PyQt5.QtCore import QThread
+
 BULLET_SPEED = 10  # pix/frame
 BULLET_FRAMES = 100
 WINDOW_WIDTH = 1280
@@ -28,8 +30,10 @@ class Bullet(QGraphicsPixmapItem):
     calc_done = pyqtSignal(QGraphicsPixmapItem, int, int)
     collision_detected = pyqtSignal(QGraphicsPixmapItem, QGraphicsPixmapItem)
 
-    def __init__(self, offset_x, offset_y, parent = None):
+    # def __init__(self, offset_x, offset_y, parent = None):
+    def __init__(self, parent = None):
         QGraphicsPixmapItem.__init__(self,parent)
+        # super().__init__()
 
         self.threadWorking = True
         self.laserLabels = []
