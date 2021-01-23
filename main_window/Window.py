@@ -182,12 +182,22 @@ class Window(QGraphicsScene):
 
     def __update_position__(self, key):
         playerPos = self.player.pos()
+        dx = 0
 
-        if key == Qt.Key_D:
-                self.player.setPos(playerPos.x() + PLAYER_SPEED, playerPos.y())
-        elif key == Qt.Key_A:
-                self.player.setPos(playerPos.x() - PLAYER_SPEED, playerPos.y())
-        elif key == Qt.Key_Space:
+        if playerPos.x() + dx <= 0:
+            if key == Qt.Key_D:
+                dx += PLAYER_SPEED
+        elif playerPos.x() + dx >= 800:
+            if key == Qt.Key_A:
+                dx -= PLAYER_SPEED
+        else:
+            if key == Qt.Key_D:
+                dx += PLAYER_SPEED
+            if key == Qt.Key_A:
+                dx -= PLAYER_SPEED
+        self.player.setPos(playerPos.x()+dx, playerPos.y())
+
+        if key == Qt.Key_Space:
             if self.playerOneCanShoot:
                 laserLabel = Bullet()
                 self.player_shoot_laser(laserLabel, playerPos.x(), playerPos.y())

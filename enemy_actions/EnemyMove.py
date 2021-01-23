@@ -51,7 +51,7 @@ class MoveEnemy(QObject):
                     #self.enemies[i].setPos(enemies[i - 1].x(), enemies[i - 1].y() + 50)
                     #self.calc_done.emit(self.enemies[i], self.enemies[i].x(), self.enemies[i].y() + 50)
                     self.calc_done.emit(self.enemies[i], self.enemies[i].x() + 10, self.enemies[i].y())
-                    if self.enemies[32].x() > 850:
+                    if self.enemies[32].x() > 800:
                         for i in range(0, 33):
                             self.calc_done.emit(self.enemies[i], self.enemies[i].x(), self.enemies[i].y() + 15)
                         time.sleep(0.25)
