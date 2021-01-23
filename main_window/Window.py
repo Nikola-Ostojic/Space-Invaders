@@ -13,6 +13,7 @@ from PyQt5.QtCore import  QSize
 from PyQt5.QtWidgets import QMainWindow, QWidget, QLabel
 from entities.Player import Player
 from entities.Enemy import Enemy
+from enemy_actions.EnemyMove import MoveEnemy
 from entities.Shield import Shield
 from PyQt5.QtGui import QPixmap
 
@@ -45,7 +46,6 @@ class Window(QGraphicsScene):
     def __init__(self, parent = None):
         QGraphicsScene.__init__(self, parent)      
         
-
         # hold the set of keys we're pressing
         self.keys_pressed = set()
 

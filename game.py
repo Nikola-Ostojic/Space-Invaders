@@ -1,5 +1,8 @@
 import sys
 from PyQt5.QtWidgets import QApplication, QLabel, QMainWindow, QStackedWidget
+from PyQt5.QtCore import Qt, QTimer
+from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5.QtGui import *
 
 from main_window.Window import Window
 from main_window.Menu import Menu
@@ -19,6 +22,12 @@ class Game(QMainWindow):
         print('Pozvan konstruktor menu')
         self.menu()
 
+        self.setWindowFlag(Qt.FramelessWindowHint)
+        self.setObjectName("Space Invaders")
+        self.setFixedSize(336, 440)
+
+        self.setWindowIcon(QtGui.QIcon('./assets/logo.png'))
+        self.setWindowIconText("Space Invaders")
 
 
     def menu(self):
@@ -27,7 +36,6 @@ class Game(QMainWindow):
         self.centralWidget.addWidget(self.mainMenu)
         self.centralWidget.setCurrentWidget(self.mainMenu)
 
-        self.resize(580, 500)
 
 
 
@@ -36,8 +44,6 @@ class Game(QMainWindow):
         sys.exit()
 
     def playGame(self):
+        self.hide()
+        print("Igra zapoceta, main menu hide-ovan")
         self.game = Window()
-
-
-
-

@@ -54,11 +54,11 @@ class MoveEnemy(QObject):
                     if self.enemies[32].x() > 891:
                         for i in range(0, 33):
                             self.calc_done.emit(self.enemies[i], self.enemies[i].x(), self.enemies[i].y() + 5)
-                        time.sleep(1.5)
+                        time.sleep(0.1)
                         self.goRight = False
                         self.goLeft = True
                         break
-                time.sleep(1.5)
+                time.sleep(0.1)
 
             elif self.goLeft:
                 for i in range(0, 33):
@@ -71,7 +71,7 @@ class MoveEnemy(QObject):
                         self.goRight = True
                         self.goLeft = False
                         break
-                time.sleep(1.5)
+                time.sleep(0.1)
 
 
 
