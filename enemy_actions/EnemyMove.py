@@ -1,42 +1,77 @@
-class Move(QGraphicsPixmapItem):
+from PyQt5.QtWidgets import (
+    QApplication,
+    QGraphicsItem,
+    QGraphicsPixmapItem,
+    QGraphicsRectItem,
+    QGraphicsScene,
+    QGraphicsView
+)
+
+from PyQt5.QtCore import pyqtSignal, QThread, QObject, QTimer
+
+import time
+from time import sleep
+
+class MoveEnemy(QObject):
+    calc_done = pyqtSignal(QGraphicsPixmapItem, int, int)
+
     def __init__(self):
+        super().__init__()
+
         self.threadWorking = True
+        self.enemies = []
+        self.goLeft = True
+        self.goRight = False
+       
         self.thread = QThread()
-        self.thread.started.connect(self.__move__)
+        self.moveToThread(self.thread)
+        self.thread.started.connect(self.__work__)
 
     def start(self):
         self.thread.start()
+
+    def remove_enemy(self, enemyPixmap: QGraphicsPixmapItem):
+        if enemyPixmap in self.enemies:
+            self.enemies.remove(enemyPixmap)
+
+    def add_enemy(self, enemyPixmap: QGraphicsPixmapItem):
+        self.enemies.append(enemyPixmap)
 
     def die(self):
         self.threadWorking = False
         self.thread.quit()
 
-#Kretanje neprijatelja
-    def __move__(self):
-
-        self.goRight = True
-        self.goLeft = False
+    #Kretanje neprijatelja
+    def __work__(self):
 
         while self.threadWorking:
 
             if self.goRight:
                 for i in range(0, 33):
-                    self.enemies[i].setPos(enemies[i - 1].x(), enemies[i - 1].y() + 50)               
-                    if i == 11 && enemies[i].y() > 849:
+                    #self.enemies[i].setPos(enemies[i - 1].x(), enemies[i - 1].y() + 50)
+                    #self.calc_done.emit(self.enemies[i], self.enemies[i].x(), self.enemies[i].y() + 50)
+                    self.calc_done.emit(self.enemies[i], self.enemies[i].x() + 10, self.enemies[i].y())
+                    if self.enemies[32].x() > 891:
                         for i in range(0, 33):
-                            self.enemies[i].x() + 50
+                            self.calc_done.emit(self.enemies[i], self.enemies[i].x(), self.enemies[i].y() + 5)
+                        time.sleep(1.5)
                         self.goRight = False
                         self.goLeft = True
+                        break
+                time.sleep(1.5)
 
             elif self.goLeft:
                 for i in range(0, 33):
-                    self.enemies[i].setPos(enemies[i - 1].x(), enemies[i - 1].y() - 50)               
-                    if i == 11 && enemies[i].y() < 49:
+                    #self.enemies[i].setPos(enemies[i - 1].x(), enemies[i - 1].y() - 50)
+                    self.calc_done.emit(self.enemies[i], self.enemies[i].x() - 10, self.enemies[i].y())                
+                    if self.enemies[11].x() < 5:                    
                         for i in range(0, 33):
-                            self.enemies[i].x() + 50
+                            self.calc_done.emit(self.enemies[i], self.enemies[i].x(), self.enemies[i].y() + 5)
+                        time.sleep(1.5)
                         self.goRight = True
                         self.goLeft = False
-            time.sleep(0.7)
+                        break
+                time.sleep(1.5)
 
 
 
