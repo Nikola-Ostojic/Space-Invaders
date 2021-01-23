@@ -43,7 +43,7 @@ class MoveEnemy(QObject):
 
     #Kretanje neprijatelja
     def __work__(self):
-
+        print("Pokrecem tred kretanja neprijatelja")
         while self.threadWorking:
 
             if self.goRight:
@@ -51,14 +51,14 @@ class MoveEnemy(QObject):
                     #self.enemies[i].setPos(enemies[i - 1].x(), enemies[i - 1].y() + 50)
                     #self.calc_done.emit(self.enemies[i], self.enemies[i].x(), self.enemies[i].y() + 50)
                     self.calc_done.emit(self.enemies[i], self.enemies[i].x() + 10, self.enemies[i].y())
-                    if self.enemies[32].x() > 891:
+                    if self.enemies[32].x() > 850:
                         for i in range(0, 33):
-                            self.calc_done.emit(self.enemies[i], self.enemies[i].x(), self.enemies[i].y() + 5)
-                        time.sleep(1.5)
+                            self.calc_done.emit(self.enemies[i], self.enemies[i].x(), self.enemies[i].y() + 15)
+                        time.sleep(0.25)
                         self.goRight = False
                         self.goLeft = True
                         break
-                time.sleep(1.5)
+                time.sleep(0.25)
 
             elif self.goLeft:
                 for i in range(0, 33):
@@ -66,12 +66,9 @@ class MoveEnemy(QObject):
                     self.calc_done.emit(self.enemies[i], self.enemies[i].x() - 10, self.enemies[i].y())                
                     if self.enemies[11].x() < 5:                    
                         for i in range(0, 33):
-                            self.calc_done.emit(self.enemies[i], self.enemies[i].x(), self.enemies[i].y() + 5)
-                        time.sleep(1.5)
+                            self.calc_done.emit(self.enemies[i], self.enemies[i].x(), self.enemies[i].y() + 15)
+                        time.sleep(0.25)
                         self.goRight = True
                         self.goLeft = False
                         break
-                time.sleep(1.5)
-
-
-
+                time.sleep(0.25)
