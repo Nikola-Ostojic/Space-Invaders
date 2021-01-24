@@ -13,7 +13,7 @@ from entities.Player2 import Player2
 from entities.Enemy import Enemy
 from entities.Shield import Shield
 from PyQt5.QtGui import QPixmap
-from enemy_actions.EnemyMove import MoveEnemy
+from enemy_actions.EnemyMove import MoveEnemy, EnemyShoot
 from player_actions.PlayerShoot import PlayerShoot
 from PyQt5 import QtMultimedia
 
@@ -22,6 +22,7 @@ from PyQt5.QtGui import QPainter
 from key_notifier import KeyNotifier
 
 from entities.Bullet import Bullet
+from entities.BulletEnemy import BulletEnemy
 
 from PyQt5.QtCore import (
     Qt,
@@ -95,18 +96,32 @@ class Window(QGraphicsScene):
             self.addItem(self.enemies[i])
             
         # Pomeranje neprijatelja
-        self.shootLaser = PlayerShoot()
         self.moveEnemy = MoveEnemy()
-        for i in range(0, 33):
-            self.moveEnemy.add_enemy(self.enemies[i])
-            self.shootLaser.add_enemy(self.enemies[i])
-        self.shootLaser.calc_done.connect(self.move_laser_up)
         self.moveEnemy.calc_done.connect(self.move_enemy)
-        self.shootLaser.collision_detected.connect(self.player_laser_enemy_collide)
         self.moveEnemy.start()
+
+        # Pucanje igraca
+        self.shootLaser = PlayerShoot()
+        self.shootLaser.calc_done.connect(self.move_laser_up)
+        self.shootLaser.collision_detected.connect(self.player_laser_enemy_collide)
         self.shootLaser.start()
         self.playerOneCanShoot = True
         self.playerTwoCanShoot = True
+
+        # Pucanje protivnika
+        self.enemyShoot = EnemyShoot()
+        self.enemyShoot.can_shoot.connect(self.enemy_shoot_laser)
+        self.enemyShoot.move_down.connect(self.move_enemy_laser)
+        self.enemyShoot.collision_detected.connect(self.enemy_hit_player)
+        #self.enemyShoot.next_level.connect(self.next_level)
+        self.enemyShoot.start()
+
+        self.enemyShoot.add_player(self.player)
+
+        for i in range(0, 33):
+            self.moveEnemy.add_enemy(self.enemies[i])
+            self.shootLaser.add_enemy(self.enemies[i])
+            self.enemyShoot.add_enemy(self.enemies[i])
 
         #Dodavanje stitova
         shields = []
@@ -175,6 +190,40 @@ class Window(QGraphicsScene):
         else:
             laserLabel.hide()
             self.shootLaser.remove_laser(laserLabel)
+
+    def enemy_shoot_laser(self, startX, startY):
+        enemyLaserLabel = BulletEnemy()
+        enemyLaserLabel.setPos(startX, startY)
+        self.addItem(enemyLaserLabel)
+
+        # dodamo laser da moze da se krece ka dole
+        self.enemyShoot.add_laser(enemyLaserLabel)
+
+    def move_enemy_laser(self, enemyLaser: QGraphicsPixmapItem, newX, newY):
+        if newY < WINDOW_HEIGHT - 50:
+            enemyLaser.setPos(newX, newY)
+        else:
+            enemyLaser.hide()
+            self.enemyShoot.remove_laser(enemyLaser)
+
+    def enemy_hit_player(self, laserLabel: QGraphicsPixmapItem, playerLabel: QGraphicsPixmapItem):
+        self.sound = QtMultimedia.QSound('assets/sounds/shipexplosion.wav')
+        self.sound.play()
+        laserLabel.hide()
+        playerLabel.setPos(400, 525)
+        '''
+        if self. == 2:
+            if self.player.playerLabel == playerLabel:
+                self.player.lower_lives()
+                self.update_lives_label(1)
+            if self.playerTwo.playerLabel == playerLabel:
+                self.playerTwo.lower_lives()
+                self.update_lives_label(2)
+        else:
+        '''
+        #self.player.lower_lives()
+        #self.update_lives_label(1)
+
 
     def __update_position__(self, key):
         playerPos = self.player.pos()
