@@ -12,6 +12,12 @@ from PyQt5.QtCore import pyqtSignal, QThread, QObject, QTimer
 import time
 from time import sleep
 
+# Board settings
+BOARD_WIDTH = 800
+BOARD_HEIGHT = 600
+IMAGE_WIDTH = 50
+IMAGE_HEIGHT = 50
+
 class MoveEnemy(QObject):
     calc_done = pyqtSignal(QGraphicsPixmapItem, int, int)
 
@@ -43,32 +49,49 @@ class MoveEnemy(QObject):
 
     #Kretanje neprijatelja
     def __work__(self):
-        print("Pokrecem tred kretanja neprijatelja")
         while self.threadWorking:
+            try:
+                # movement logic
+                if self.goLeft:
+                    for enemy in self.enemies:
+                        enemyPos = enemy.pos()
+                        enemyX = enemyPos.x()
+                        enemyY = enemyPos.y()
+                        if enemyX > 50:
+                            self.goLeft = True
+                            self.goRight = False
+                            self.calc_done.emit(enemy, enemyX - 10, enemyY)
+                        else:
+                            for enemy in self.enemies:
+                                enemyPos = enemy.pos()
+                                enemyX = enemyPos.x()
+                                enemyY = enemyPos.y()
+                                self.calc_done.emit(enemy, enemyX, enemyY + 15)
+                            self.goLeft = False
+                            self.goRight = True
+                            break
+                    sleep(0.25)
 
-            if self.goRight:
-                for i in range(0, 33):
-                    #self.enemies[i].setPos(enemies[i - 1].x(), enemies[i - 1].y() + 50)
-                    #self.calc_done.emit(self.enemies[i], self.enemies[i].x(), self.enemies[i].y() + 50)
-                    self.calc_done.emit(self.enemies[i], self.enemies[i].x() + 10, self.enemies[i].y())
-                    if self.enemies[32].x() > 800:
-                        for i in range(0, 33):
-                            self.calc_done.emit(self.enemies[i], self.enemies[i].x(), self.enemies[i].y() + 15)
-                        time.sleep(0.25)
-                        self.goRight = False
-                        self.goLeft = True
-                        break
-                time.sleep(0.25)
+                elif self.goRight:
+                    for enemy in reversed(self.enemies):
+                        enemyPos = enemy.pos()
+                        enemyX = enemyPos.x()
+                        enemyY = enemyPos.y()
 
-            elif self.goLeft:
-                for i in range(0, 33):
-                    #self.enemies[i].setPos(enemies[i - 1].x(), enemies[i - 1].y() - 50)
-                    self.calc_done.emit(self.enemies[i], self.enemies[i].x() - 10, self.enemies[i].y())                
-                    if self.enemies[11].x() < 5:                    
-                        for i in range(0, 33):
-                            self.calc_done.emit(self.enemies[i], self.enemies[i].x(), self.enemies[i].y() + 15)
-                        time.sleep(0.25)
-                        self.goRight = True
-                        self.goLeft = False
-                        break
-                time.sleep(0.25)
+                        if enemyX < 800:
+                            self.goRight = True
+                            self.goLeft = False
+                            self.calc_done.emit(enemy, enemyX + 10, enemyY)
+                        else:
+                            for enemy in self.enemies:
+                                enemyPos = enemy.pos()
+                                enemyX = enemyPos.x()
+                                enemyY = enemyPos.y()
+                                self.calc_done.emit(enemy, enemyX, enemyY + 15)
+                            self.goRight = False
+                            self.goLeft = True
+                            break
+                    sleep(0.25)
+
+            except Exception as e:
+                print('Exception in MoveEnemy_Thread: ', str(e))

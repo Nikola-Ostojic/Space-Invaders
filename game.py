@@ -40,6 +40,28 @@ class Game(QMainWindow):
     def playGame(self):
         self.game = Window(1)
 
+'''
+    ### OVO TREBA UPOTREBITI INACE CURI MEMORIJA GADNO NE PITAJTE ME KAKO ZNAM ###
+    def stopThreads(self):
+        try:
+            print('Closing all threads from Galagaa')
+            if self.game is not None:
+                self.game.shootLaser.die()
+                self.game.moveEnemy.die()
+                self.game.enemyShoot.die()
+                self.key_notifier.die()
+        except Exception as e:
+            print('Exception while trying to close threads: {}', str(e))
 
+    def closeEvent(self, event):
+        try:
+            if self.game is not None:
+                self.game.shootLaser.die()
+                self.game.moveEnemy.die()
+                self.game.enemyShoot.die()
+                self.key_notifier.die()
+        except Exception as e:
+            print('Exception while trying to close threads: {}', str(e))
 
-
+        sys.exit()
+'''

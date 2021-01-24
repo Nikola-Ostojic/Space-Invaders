@@ -24,17 +24,15 @@ from time import sleep
 
 BULLET_SPEED = 10  # pix/frame
 BULLET_FRAMES = 100
-WINDOW_WIDTH = 1280
-WINDOW_HEIGTH = 720
+WINDOW_WIDTH = 900
+WINDOW_HEIGTH = 600
 
 class PlayerShoot(QObject):
     calc_done = pyqtSignal(QGraphicsPixmapItem, int, int)
     collision_detected = pyqtSignal(QGraphicsPixmapItem, QGraphicsPixmapItem)
 
-    # def __init__(self, offset_x, offset_y, parent = None):
     def __init__(self):
         super().__init__()
-        # super().__init__()
 
         self.threadWorking = True
         self.laserLabels = []
@@ -68,24 +66,24 @@ class PlayerShoot(QObject):
     def __work__(self):
         print('Pokrecem tred pucanja')
         while self.threadWorking:
-
+            print('Lasers: ', len(self.laserLabels))
+            print('Enemies: ', len(self.enemyLabels))
+            #print("Ulazim u proveru kolizije")
             try:
                 collided = False
 
                 # Collision with enemy
                 for enemy in self.enemyLabels:
-
                     if collided:
                         break
-
                     enemyGeo = enemy.pos()
                     enemyXStart = enemyGeo.x()
                     enemyXEnd = enemyGeo.x() + WINDOW_WIDTH
                     enemyYStart = enemyGeo.y()
                     enemyYEnd = enemyGeo.y() + WINDOW_HEIGTH
 
-                    enemyXArray = range(enemyXStart, enemyXEnd)
-                    enemyYArray = range(enemyYStart, enemyYEnd)
+                    enemyXArray = range(int(enemyXStart), int(enemyXEnd))
+                    enemyYArray = range(int(enemyYStart), int(enemyYEnd))
 
                     # check for collision with laser
                     for laser in self.laserLabels:
@@ -95,8 +93,8 @@ class PlayerShoot(QObject):
                         laserYStart = laserGeo.y()
                         laserYEnd = laserGeo.y() + WINDOW_HEIGTH
 
-                        laserXArray = range(laserXStart, laserXEnd)
-                        laserYArray = range(laserYStart, laserYEnd)
+                        laserXArray = range(int(laserXStart), int(laserXEnd))
+                        laserYArray = range(int(laserYStart), int(laserYEnd))
 
                         # drugi nacin detekcije kolizije
                         for enemyY in enemyYArray:
@@ -106,6 +104,7 @@ class PlayerShoot(QObject):
                             if enemyY in laserYArray:
                                 for enemyX in enemyXArray:
                                     if enemyX in laserXArray:
+                                        print('Collision detected for y: {}'.format(enemyY))
                                         self.remove_enemy(enemy)
                                         self.remove_laser(laser)
                                         self.collision_detected.emit(enemy, laser)

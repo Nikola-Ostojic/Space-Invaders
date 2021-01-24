@@ -16,4 +16,3 @@ if __name__ == '__main__':
     newGame = space_invaders()
 
     sys.exit(app.exec_())
-

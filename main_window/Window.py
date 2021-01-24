@@ -52,13 +52,6 @@ class Window(QGraphicsScene):
         self.key_notifier.start()
 
         numberOfPlayer = singlemulti
-        # ShootLaser thread
-        self.shootLaser = PlayerShoot()
-        self.shootLaser.calc_done.connect(self.move_laser_up)
-        self.shootLaser.collision_detected.connect(self.player_laser_enemy_collide)
-        self.shootLaser.start()
-        self.playerOneCanShoot = True
-        #self.playerTwoCanShoot = True
 
         # use a timer to get 60Hz refresh (hopefully)
         self.timer = QBasicTimer()
@@ -83,36 +76,36 @@ class Window(QGraphicsScene):
             self.addItem(self.player2)   
 
         # Postavljanje neprijatelja
-        enemies = []
-        enemies.append(Enemy())
-        enemies[0].setPos(100, 50)
+        self.enemies = []
+        self.enemies.append(Enemy())
+        self.enemies[0].setPos(100, 50)
 
         for i in range(0, 33):
-            enemies.append(Enemy())
+            self.enemies.append(Enemy())
             if i == 11:
-                enemies[i].setPos(enemies[0].x(), enemies[0].y() + 60)
+                self.enemies[i].setPos(self.enemies[0].x(), self.enemies[0].y() + 60)
                 continue
             if i == 22:
-                 enemies[i].setPos(enemies[11].x(), enemies[11].y() + 60)
+                 self.enemies[i].setPos(self.enemies[11].x(), self.enemies[11].y() + 60)
                  continue              
-            enemies[i].setPos(enemies[i - 1].x() + 60, enemies[i - 1].y())     
+            self.enemies[i].setPos(self.enemies[i - 1].x() + 60, self.enemies[i - 1].y())     
 
         for i in range(0, 33):
-            self.addItem(enemies[i])
-
-        # add enemies for other stuff
-       # for i in range(len(self.enemies)):
-            #self.moveEnemy.add_enemy(self.enemyLabels[i])
-            #self.enemyShoot.add_enemy(self.enemyLabels[i])
-            #self.shootLaser.add_enemy(self.enemies[i])
-            #self.enemyAttack.add_enemy(self.enemyLabels[i])
-
+            self.addItem(self.enemies[i])
+            
         # Pomeranje neprijatelja
+        self.shootLaser = PlayerShoot()
         self.moveEnemy = MoveEnemy()
         for i in range(0, 33):
-            self.moveEnemy.add_enemy(enemies[i])
+            self.moveEnemy.add_enemy(self.enemies[i])
+            self.shootLaser.add_enemy(self.enemies[i])
+        self.shootLaser.calc_done.connect(self.move_laser_up)
         self.moveEnemy.calc_done.connect(self.move_enemy)
+        self.shootLaser.collision_detected.connect(self.player_laser_enemy_collide)
         self.moveEnemy.start()
+        self.shootLaser.start()
+        self.playerOneCanShoot = True
+        self.playerTwoCanShoot = True
 
         #Dodavanje stitova
         shields = []
@@ -130,7 +123,7 @@ class Window(QGraphicsScene):
         self.view.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.view.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.view.show()
-        #self.view.setFixedSize(WINDOW_WIDTH,WINDOW_HEIGHT)
+        self.view.setFixedSize(WINDOW_WIDTH,WINDOW_HEIGHT)
         self.setSceneRect(0,0,WINDOW_WIDTH,WINDOW_HEIGHT)  
             
     def move_enemy(self, enemyPixMap: QGraphicsPixmapItem, newX, newY):
@@ -187,7 +180,7 @@ class Window(QGraphicsScene):
         if playerPos.x() + dx <= 0:
             if key == Qt.Key_D:
                 dx += PLAYER_SPEED
-        elif playerPos.x() + dx >= 800:
+        elif playerPos.x() + dx >= 845:
             if key == Qt.Key_A:
                 dx -= PLAYER_SPEED
         else:
@@ -201,19 +194,27 @@ class Window(QGraphicsScene):
             if self.playerOneCanShoot:
                 laserLabel = Bullet()
                 self.player_shoot_laser(laserLabel, playerPos.x(), playerPos.y())
-                '''
-        # 2 players
-        if self.startPlayers == 2:
-            playerTwoPos = self.playerTwoLabel.geometry()
+               
+'''
+        ## player 2 ##
+        playerPos2 = self.player2.pos()
+        dx2 = 0
 
-            # player two moving
+        if playerPos2.x() + dx2 <= 0:
             if key == Qt.Key_Right:
-                if self.try_move_player(playerTwoPos.x() + self.playerTwoSpeed):
-                    self.playerTwoLabel.setGeometry(playerTwoPos.x() + self.playerTwoSpeed, playerTwoPos.y(), playerTwoPos.width(), playerTwoPos.height())
-            elif key == Qt.Key_Left:
-                if self.try_move_player(playerTwoPos.x() - self.playerTwoSpeed):
-                    self.playerTwoLabel.setGeometry(playerTwoPos.x() - self.playerTwoSpeed, playerTwoPos.y(), playerTwoPos.width(), playerTwoPos.height())
-            elif key == Qt.Key_0:
-                if self.playerTwo.get_lives() > 0 and self.playerTwoCanShoot:
-                    self.player_shoot_laser(playerTwoPos.x() + config.IMAGE_WIDTH // 2, playerTwoPos.y() - config.IMAGE_HEIGHT)
-            '''
+                dx2 += PLAYER_SPEED
+        elif playerPos2.x() + dx2 >= 845:
+            if key == Qt.Key_Left:
+                dx -= PLAYER_SPEED
+        else:
+            if key == Qt.Key_Right:
+                dx2 += PLAYER_SPEED
+            if key == Qt.Key_Left:
+                dx2 -= PLAYER_SPEED
+        self.player2.setPos(playerPos2.x()+dx, playerPos2.y())
+
+        if key == Qt.Key_Enter:
+            if self.playerTwoCanShoot:
+                laserLabel = Bullet()
+                self.player_shoot_laser(laserLabel, playerPos2.x(), playerPos2.y())
+'''
