@@ -22,6 +22,7 @@ from PyQt5.QtGui import QPainter
 from key_notifier import KeyNotifier
 
 from entities.Bullet import Bullet
+from entities.BulletEnemy import BulletEnemy
 
 from PyQt5.QtCore import (
     Qt,
@@ -115,6 +116,8 @@ class Window(QGraphicsScene):
         #self.enemyShoot.next_level.connect(self.next_level)
         self.enemyShoot.start()
 
+        self.enemyShoot.add_player(self.player)
+
         for i in range(0, 33):
             self.moveEnemy.add_enemy(self.enemies[i])
             self.shootLaser.add_enemy(self.enemies[i])
@@ -189,7 +192,7 @@ class Window(QGraphicsScene):
             self.shootLaser.remove_laser(laserLabel)
 
     def enemy_shoot_laser(self, startX, startY):
-        enemyLaserLabel = Bullet()
+        enemyLaserLabel = BulletEnemy()
         enemyLaserLabel.setPos(startX, startY)
         self.addItem(enemyLaserLabel)
 
@@ -204,7 +207,10 @@ class Window(QGraphicsScene):
             self.enemyShoot.remove_laser(enemyLaser)
 
     def enemy_hit_player(self, laserLabel: QGraphicsPixmapItem, playerLabel: QGraphicsPixmapItem):
+        self.sound = QtMultimedia.QSound('assets/sounds/shipexplosion.wav')
+        self.sound.play()
         laserLabel.hide()
+        playerLabel.setPos(400, 525)
         '''
         if self. == 2:
             if self.player.playerLabel == playerLabel:
