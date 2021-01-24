@@ -23,6 +23,7 @@ from PyQt5.QtCore import QObject
 from time import sleep
 
 BULLET_SPEED = 10  # pix/frame
+BULLET_FRAMES = 100
 WINDOW_WIDTH = 900
 WINDOW_HEIGTH = 600
 
@@ -65,8 +66,8 @@ class PlayerShoot(QObject):
     def __work__(self):
         print('Pokrecem tred pucanja')
         while self.threadWorking:
-            #print('Lasers: ', len(self.laserLabels))
-            #print('Enemies: ', len(self.enemyLabels))
+            print('Lasers: ', len(self.laserLabels))
+            print('Enemies: ', len(self.enemyLabels))
             #print("Ulazim u proveru kolizije")
             try:
                 collided = False
