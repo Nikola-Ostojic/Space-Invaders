@@ -1,5 +1,6 @@
 import sys
 from PyQt5.QtWidgets import QApplication, QLabel, QMainWindow, QStackedWidget
+from PyQt5.QtCore import Qt 
 
 from main_window.Window import Window
 from main_window.Menu import Menu
@@ -13,6 +14,11 @@ class Game(QMainWindow):
         self.centralWidget = QStackedWidget()
         self.setCentralWidget(self.centralWidget)
         self.mainMenu = Menu()
+
+        self.setWindowFlag(Qt.FramelessWindowHint)
+        self.setFixedWidth(341)
+        self.setFixedHeight(441)
+
         print('Pozvan konstruktor menu')
         self.menu()
 
