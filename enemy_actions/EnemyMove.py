@@ -12,12 +12,6 @@ from PyQt5.QtCore import pyqtSignal, QThread, QObject, QTimer
 import time
 from time import sleep
 
-# Board settings
-BOARD_WIDTH = 800
-BOARD_HEIGHT = 600
-IMAGE_WIDTH = 50
-IMAGE_HEIGHT = 50
-
 class MoveEnemy(QObject):
     calc_done = pyqtSignal(QGraphicsPixmapItem, int, int)
 
@@ -66,7 +60,7 @@ class MoveEnemy(QObject):
                                 enemyPos = enemy.pos()
                                 enemyX = enemyPos.x()
                                 enemyY = enemyPos.y()
-                                self.calc_done.emit(enemy, enemyX, enemyY + 15)
+                                self.calc_done.emit(enemy, enemyX, enemyY + 20)
                             self.goLeft = False
                             self.goRight = True
                             break
@@ -87,7 +81,7 @@ class MoveEnemy(QObject):
                                 enemyPos = enemy.pos()
                                 enemyX = enemyPos.x()
                                 enemyY = enemyPos.y()
-                                self.calc_done.emit(enemy, enemyX, enemyY + 15)
+                                self.calc_done.emit(enemy, enemyX, enemyY + 20)
                             self.goRight = False
                             self.goLeft = True
                             break
