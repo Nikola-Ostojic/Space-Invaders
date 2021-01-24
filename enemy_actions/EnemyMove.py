@@ -109,6 +109,7 @@ class EnemyShoot(QObject):
         self.enemies = []
         self.lasers = []
         self.players = []
+        self.shields = []
 
         self.enemyLaserSpeed = BULLET_SPEED
         self.shootingTimerInterval = COOLDOWN
@@ -145,6 +146,13 @@ class EnemyShoot(QObject):
     def remove_player(self, playerLabel: QGraphicsPixmapItem):
         if playerLabel in self.players:
             self.players.remove(playerLabel)
+
+    def add_shield(self, shieldLabel: QGraphicsPixmapItem):
+        self.shields.append(shieldLabel)
+
+    def remove_shield(self, shieldLabel: QGraphicsPixmapItem):
+        if shieldLabel in self.shields:
+            self.shields.remove(shieldLabel)
 
     def update_level(self, newInterval, newLaserSpeed):
         if (self.shootingTimerInterval - newInterval) >= 200:
@@ -305,6 +313,29 @@ class EnemyShoot(QObject):
 
                         else:
                             self.move_down.emit(laser, laserX, laserY)
+
+                        if (len(self.shields) > 0):
+                            for shield in self.shields:
+                                shieldPos = shield.pos()
+                                shieldXStart = shieldPos.x()
+                                shieldXEnd = shieldXStart + 200
+                                shieldY = shieldPos.y()
+
+                                shieldXEqual = False;
+                                if shieldXStart <= laserX <= shieldXEnd:
+                                    shieldXEqual = True
+                                shieldYRange = range(int(shieldY), int(shieldY + 200))
+                                laserYRange = range(int(laserY), int(laserY + 50))
+
+                                for y in laserYRange:
+                                    if y in shieldYRange and shieldXEqual:
+                                        print('enemy hit shield with laser')
+                                        self.collision_detected.emit(shield, laser)
+                                        self.remove_laser(laser)
+                                        break
+                                    else:
+                                        self.move_down.emit(laser, laserX, laserY)
+
 
             except Exception as e:
                 print('Exception in Moving_Laser: ', str(e))

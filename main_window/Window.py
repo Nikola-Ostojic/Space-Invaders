@@ -113,6 +113,7 @@ class Window(QGraphicsScene):
         self.enemyShoot.can_shoot.connect(self.enemy_shoot_laser)
         self.enemyShoot.move_down.connect(self.move_enemy_laser)
         self.enemyShoot.collision_detected.connect(self.enemy_hit_player)
+        self.enemyShoot.collision_detected.connect(self.enemy_laser_shield_collide)
         #self.enemyShoot.next_level.connect(self.next_level)
         self.enemyShoot.start()
 
@@ -124,16 +125,17 @@ class Window(QGraphicsScene):
             self.enemyShoot.add_enemy(self.enemies[i])
 
         #Dodavanje stitova
-        shields = []
-        shields.append(Shield())
-        shields[0].setPos(50, 350)
-        shields.append(Shield())
-        shields[1].setPos(400, 350)
-        shields.append(Shield())
-        shields[2].setPos(700, 350)
+        self.shields = []
+        self.shields.append(Shield())
+        self.shields[0].setPos(50, 350)
+        self.shields.append(Shield())
+        self.shields[1].setPos(400, 350)
+        self.shields.append(Shield())
+        self.shields[2].setPos(700, 350)
 
         for i in range(0, 3):
-            self.addItem(shields[i])      
+            self.addItem(self.shields[i])
+            self.enemyShoot.add_shield(self.shields[i])
 
         self.view = QGraphicsView(self)
         self.view.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
@@ -178,6 +180,18 @@ class Window(QGraphicsScene):
 
         except Exception as e:
             print('Exception in Main_Thread/player_laser_enemy_collide method: ', str(e))
+
+    def enemy_laser_shield_collide(self, shieldLabel: QGraphicsPixmapItem, laserLabel: QGraphicsPixmapItem):
+        try:
+            laserLabel.hide()
+            for shield in self.shields:
+                if shield == shieldLabel:
+                    shield.makeDamage()
+                    self.enemyShoot.remove_shield(shield)
+                    print('Damage to shield')
+        except Exception as e:
+            print(str(e))
+
 
     def player_shoot_laser(self, laserLabel: QGraphicsPixmapItem, startX, startY):
         laserLabel.setPos(startX + PLAYER_BULLET_X_OFFSETS[0], startY - PLAYER_BULLET_Y)
