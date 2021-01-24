@@ -18,12 +18,9 @@ from PyQt5.QtWidgets import (
     QGraphicsView
 )
 
-BULLET_SPEED = 10  # pix/frame
-BULLET_FRAMES = 100
-WINDOW_WIDTH = 1280
-WINDOW_HEIGTH = 720
-
 class Bullet(QGraphicsPixmapItem):
     def __init__(self, parent = None):
         QGraphicsPixmapItem.__init__(self,parent)
         self.setPixmap(QPixmap('assets/laser.png'))
+        self.sound = QtMultimedia.QSound('assets/sounds/shoot.wav')
+        self.sound.play()

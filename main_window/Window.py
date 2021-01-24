@@ -15,6 +15,7 @@ from entities.Shield import Shield
 from PyQt5.QtGui import QPixmap
 from enemy_actions.EnemyMove import MoveEnemy
 from player_actions.PlayerShoot import PlayerShoot
+from PyQt5 import QtMultimedia
 
 from PyQt5 import QtGui
 from PyQt5.QtGui import QPainter
@@ -152,6 +153,8 @@ class Window(QGraphicsScene):
 
     def player_laser_enemy_collide(self, enemyLabel: QGraphicsPixmapItem, laserLabel: QGraphicsPixmapItem):
         try:
+            self.sound = QtMultimedia.QSound('assets/sounds/invaderkilled.wav')
+            self.sound.play()
             enemyLabel.hide()
             laserLabel.hide()
             self.remove_enemy_label(enemyLabel)

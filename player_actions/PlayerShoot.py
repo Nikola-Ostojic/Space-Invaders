@@ -89,7 +89,7 @@ class PlayerShoot(QObject):
                     for laser in self.laserLabels:
                         laserGeo = laser.pos()
                         laserXStart = laserGeo.x()
-                        laserXEnd = laserGeo.x() + 50
+                        laserXEnd = laserGeo.x() + 30
                         laserYStart = laserGeo.y()
                         laserYEnd = laserGeo.y() + 50
 
@@ -104,7 +104,6 @@ class PlayerShoot(QObject):
                             if enemyY in laserYArray:
                                 for enemyX in enemyXArray:
                                     if enemyX in laserXArray:
-                                        #print('Collision detected for y: {}'.format(enemyY))
                                         self.remove_enemy(enemy)
                                         self.remove_laser(laser)
                                         self.collision_detected.emit(enemy, laser)
