@@ -188,7 +188,7 @@ class Window(QGraphicsScene):
                 if shield == shieldLabel:
                     shield.makeDamage()
                     self.enemyShoot.remove_shield(shield)
-                    print('Damage to shield')
+                    print('Damage to shield done')
         except Exception as e:
             print(str(e))
 
