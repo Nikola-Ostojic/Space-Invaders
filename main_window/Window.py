@@ -12,7 +12,7 @@ from entities.Player import Player
 from entities.Player2 import Player2
 from entities.Enemy import Enemy
 from entities.Shield import Shield
-from PyQt5.QtGui import QPixmap
+from PyQt5.QtGui import QPixmap, QFont
 from enemy_actions.EnemyMove import MoveEnemy, EnemyShoot
 from player_actions.PlayerShoot import PlayerShoot
 from PyQt5 import QtMultimedia, QtCore
@@ -68,15 +68,18 @@ class Window(QGraphicsScene):
             self.player = Player()
             self.player.setPos(400, 525)
             self.addItem(self.player)
+            self.flag_playerOneDead=False
 
         elif (self.numberOfPlayer == 2):
             self.player = Player()
             self.player.setPos(400, 525)
             self.addItem(self.player)
+            self.flag_playerOneDead=False
 
             self.player2 = Player2()
             self.player2.setPos(100, 525)
             self.addItem(self.player2)   
+            self.flag_playerTwoDead=False
 
         # Postavljanje neprijatelja
         self.enemies = []
@@ -133,7 +136,7 @@ class Window(QGraphicsScene):
         self.shields.append(Shield())
         self.shields[0].setPos(50, 350)
         self.shields.append(Shield())
-        self.shields[1].setPos(400, 350)
+        self.shields[1].setPos(375, 350)
         self.shields.append(Shield())
         self.shields[2].setPos(700, 350)
 
@@ -309,13 +312,12 @@ class Window(QGraphicsScene):
         font = QtGui.QFont()
         font.setPointSize(16)
         font.setBold(True)
-        font.setWeight(75)
+        font.setWeight(QFont.Bold)
         self.lab_lives1.setFont(font)
         self.lab_lives1.setObjectName("lab_lives1")
         self.lab_lives1.setStyleSheet("color:yellow")
         self.horizontalLayout.addWidget(self.lab_lives1)
 
-       #self.lab_lives1.setText("Player1 Lives: X")
         self.lab_lives1.setText("Player1 Lives: 3")
 
         #Level
@@ -370,6 +372,7 @@ class Window(QGraphicsScene):
             elif lives<=0:
                 self.lab_lives1Text = "Player1 Lives: 0"
                 self.lab_lives1.setText(self.lab_lives1Text)
+                self.flag_playerOneDead=True
                 self.player.hide()
 
         if playerNo==2:
@@ -387,4 +390,47 @@ class Window(QGraphicsScene):
             elif lives<=0:
                 self.lab_lives2Text = "Player2 Lives: 0"
                 self.lab_lives2.setText(self.lab_lives2Text)
+                self.flag_playerTwoDead=True
                 self.player2.hide()
+
+        if self.numberOfPlayer==1:
+            if self.flag_playerOneDead==True:
+                self.gameOver()
+        else:
+            if self.flag_playerOneDead==True and self.flag_playerTwoDead==True:
+                self.gameOver()
+
+
+    def gameOver(self):
+        self.tempWidget = QWidget()
+        self.tempWidget.setGeometry(QtCore.QRect(0,0,900,600))
+        self.tempWidget.setObjectName("tempWidget")
+
+        self.horizontalLayout = QHBoxLayout(self.tempWidget)
+        self.horizontalLayout.setContentsMargins(0, 0, 0, 0)
+        self.horizontalLayout.setSpacing(230)
+        self.horizontalLayout.setObjectName("horizontalLayout")
+        self.horizontalLayout.setAlignment(Qt.AlignCenter)
+
+        #Labela game over
+        self.lab_gameOver = QtWidgets.QLabel(self.tempWidget)
+        self.lab_gameOver.setEnabled(True)
+        font = QtGui.QFont()
+        font.setFamily("Calibri")
+        font.setPointSize(60)
+        font.setBold(True)
+        font.setWeight(QFont.Bold)
+        self.lab_gameOver.setFont(font)
+        self.lab_gameOver.setObjectName("lab_gameOver")
+        self.lab_gameOver.setStyleSheet("color: red; background-color: transparent;")
+        self.horizontalLayout.addWidget(self.lab_gameOver)
+        self.lab_gameOver.setText("GAME OVER")
+
+
+        self.tempWidget.setStyleSheet("background-color: rgba(255,255,255,70);")
+
+        self.Widget = self.addWidget(self.tempWidget)
+
+
+        # ZAUSTAVITI THREADOVE U GAME OVERU KAKO BI SE SVE ZAMRZLO I ISPISALO GAME OVER
+        # Kad se bude implementiralo gasenje threadova onda se nece mesati labeli zivota sa labelom Game Over
