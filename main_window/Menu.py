@@ -101,10 +101,10 @@ class Menu(QWidget):
         quit_button.clicked.connect(self.quit)
         
 
-        print('prikazujem klasu Menu')
+        #print('prikazujem klasu Menu')
 
 
-        self.show()
+        #self.show()
 
     def play(self):
         self.playSignal.emit()

@@ -19,12 +19,15 @@ class Game(QMainWindow):
         self.setFixedWidth(341)
         self.setFixedHeight(441)
 
-        print('Pozvan konstruktor menu')
+        
+
+        #print('Pozvan konstruktor menu')
         self.menu()
 
 
 
-    def menu(self):
+    def menu(self):   
+
         self.mainMenu.playSignal.connect(self.playGame)
         self.mainMenu.quitGameSignal.connect(self.quit)
 
@@ -34,6 +37,8 @@ class Game(QMainWindow):
         self.centralWidget.setCurrentWidget(self.mainMenu)
 
         self.resize(580, 500)
+
+        self.mainMenu.show()
 
 
     def playMultiplayer(self):
@@ -45,29 +50,13 @@ class Game(QMainWindow):
 
     def playGame(self):
         self.game = Window(1)
+        self.game.close.connect(self.close)
 
-'''
-    ### OVO TREBA UPOTREBITI INACE CURI MEMORIJA GADNO NE PITAJTE ME KAKO ZNAM ###
-    def stopThreads(self):
-        try:
-            print('Closing all threads from Galagaa')
-            if self.game is not None:
-                self.game.shootLaser.die()
-                self.game.moveEnemy.die()
-                self.game.enemyShoot.die()
-                self.key_notifier.die()
-        except Exception as e:
-            print('Exception while trying to close threads: {}', str(e))
+    def close(self):
+        self.game = []
+        #self.game.close()
 
-    def closeEvent(self, event):
-        try:
-            if self.game is not None:
-                self.game.shootLaser.die()
-                self.game.moveEnemy.die()
-                self.game.enemyShoot.die()
-                self.key_notifier.die()
-        except Exception as e:
-            print('Exception while trying to close threads: {}', str(e))
-
-        sys.exit()
-'''
+    # self.game.shootLaser.die()
+    # self.game.moveEnemy.die()
+    # self.game.enemyShoot.die()
+    # self.key_notifier.die()

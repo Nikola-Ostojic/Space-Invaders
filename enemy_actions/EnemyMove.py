@@ -164,16 +164,16 @@ class EnemyShoot(QObject):
         if (self.shootingTimerInterval - newInterval) >= 200:
             self.shootingTimerInterval -= newInterval
             self.shootingTimer.setInterval(self.shootingTimerInterval)
-            print('Changed shooting interval to: ', self.shootingTimerInterval)
+            #print('Changed shooting interval to: ', self.shootingTimerInterval)
 
         if (self.enemyLaserSpeed + newLaserSpeed) <= 18:
             self.enemyLaserSpeed += newLaserSpeed
-            print('Changed enemy laser speed to: ', self.enemyLaserSpeed)
+            #print('Changed enemy laser speed to: ', self.enemyLaserSpeed)
 
     def die(self):
         self.threadWorking = False
         self.shootingTimer.stop()
-        print('Stopping shooting timer')
+        #print('Stopping shooting timer')
         self.thread.quit()
 
     def find_ymax(self):
@@ -205,7 +205,7 @@ class EnemyShoot(QObject):
             self.canShoot = True
 
     def __work__(self):
-        print("Tred pucanja neprijatelja pokrenut")
+        #print("Tred pucanja neprijatelja pokrenut")
         while self.threadWorking:
             try:
                 if self.canShoot:
@@ -274,8 +274,8 @@ class EnemyShoot(QObject):
                             self.can_shoot.emit(laserX, laserY)
                             self.canShoot = False
 
-                        else:
-                            print('Okej, nesto ovde ne radi ...')
+                        # else:
+                        #     print('Okej, nesto ovde ne radi ...')
             except Exception as e:
                 print('Exception in EnemyShoot_Thread: ', str(e))
 
@@ -309,7 +309,7 @@ class EnemyShoot(QObject):
 
                                 for y in laserYRange:
                                     if y in playerYRange and xIsEqual:
-                                        print('enemy hit player with laser')
+                                        #print('enemy hit player with laser')
                                         self.collision_detected.emit(laser, player)
                                         self.remove_laser(laser)
                                         break
@@ -341,7 +341,7 @@ class EnemyShoot(QObject):
 
                                     for y in laserYRange:
                                         if y in shieldYRange and shieldXEqual:
-                                            print('enemy hit shield with laser')
+                                            #print('enemy hit shield with laser')
                                             self.collision_detected_with_shield.emit(laser, shield)
                                             self.remove_laser(laser)
                                             break

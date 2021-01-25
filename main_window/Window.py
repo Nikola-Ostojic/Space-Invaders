@@ -38,6 +38,8 @@ from PyQt5.QtWidgets import (
     QGraphicsView
 )
 
+from PyQt5.QtCore import pyqtSignal
+
 PLAYER_BULLET_X_OFFSETS = [23, 45]
 PLAYER_BULLET_Y         = 15
 WINDOW_WIDTH = 900
@@ -47,6 +49,8 @@ PLAYER_SPEED = 8
 
 class Window(QGraphicsScene):
     
+    close = pyqtSignal()
+
     def __init__(self, singlemulti, parent = None):
         QGraphicsScene.__init__(self, parent)
 
@@ -158,7 +162,13 @@ class Window(QGraphicsScene):
 
     def remove_enemy_label(self, enemy: QGraphicsPixmapItem):
         if enemy in self.enemies:
-            self.enemies.remove(enemy)
+            self.enemies.remove(enemy)           
+            
+
+    def remove_laser(self, laserLabel: QGraphicsPixmapItem):
+        if laser in self.enemies:
+            self.enemies.remove(enemy)           
+            self.enemyShoot.remove_enemy(enemy)   #Da ne pucaju kad su vec pogodjeni
 
     def keyPressEvent(self, event):
         self.key_notifier.add_key(event.key())
@@ -183,9 +193,11 @@ class Window(QGraphicsScene):
             self.sound.play()
             enemyLabel.hide()
             laserLabel.hide()
-            self.remove_enemy_label(enemyLabel)
+            self.shootLaser.remove_laser(laserLabel)
+            self.shootLaser.remove_enemy(enemyLabel)
+            self.remove_enemy_label(enemyLabel)        
+            self.enemyShoot.remove_enemy(enemyLabel)
             self.moveEnemy.remove_enemy(enemyLabel)
-            #self.enemyShoot.remove_enemy(enemyLabel)
 
         except Exception as e:
             print('Exception in Main_Thread/player_laser_enemy_collide method: ', str(e))
@@ -200,7 +212,7 @@ class Window(QGraphicsScene):
             for shield in self.shields:
                 if shield == shieldLabel:
                     shield.makeDamage()
-                    print(shield.health)
+                    #print(shield.health)
                     if shield.health <= 0:    
                         self.enemyShoot.remove_shield(shield)
                         self.shields.remove(shield)
@@ -241,7 +253,7 @@ class Window(QGraphicsScene):
         self.sound = QtMultimedia.QSound('assets/sounds/shipexplosion.wav')
         self.sound.play()
         laserLabel.hide()
-        playerLabel.setPos(400, 525)
+        #playerLabel.setPos(400, 525)   Bug, zasto mu menjati poziciju
         if self.player == playerLabel:
             self.player.loseLevel()
             self.update_GUI_lives(1)
@@ -252,11 +264,19 @@ class Window(QGraphicsScene):
 
     def __update_position__(self, key):
         playerPos = self.player.pos()
-        dx = 0
+        dx = 0     
+
+        # Closing program    
+        if key == Qt.Key_T:
+            self.shootLaser.die()
+            self.moveEnemy.die()
+            self.enemyShoot.die()
+            self.key_notifier.die()
+            self.close.emit()
 
         if playerPos.x() + dx <= 0:
             if key == Qt.Key_D:
-                dx += PLAYER_SPEED
+                dx += PLAYER_SPEED        
         elif playerPos.x() + dx >= 845:
             if key == Qt.Key_A:
                 dx -= PLAYER_SPEED
@@ -359,7 +379,7 @@ class Window(QGraphicsScene):
     def update_GUI_lives(self,playerNo):
         if playerNo==1:
             lives=self.player.lives
-            print('Update player 1 lives: ',lives)
+            #print('Update player 1 lives: ',lives)
             if lives==3:
                 self.lab_lives1Text = "Player1 Lives: 3"
                 self.lab_lives1.setText(self.lab_lives1Text)
@@ -377,7 +397,7 @@ class Window(QGraphicsScene):
 
         if playerNo==2:
             lives=self.player2.lives
-            print('Update player 2 lives: ',lives)
+            #print('Update player 2 lives: ',lives)
             if lives==3:
                 self.lab_lives2Text = "Player2 Lives: 3"
                 self.lab_lives2.setText(self.lab_lives2Text)
@@ -402,6 +422,11 @@ class Window(QGraphicsScene):
 
 
     def gameOver(self):
+
+        self.timer.stop()
+        self.moveEnemy.stop()
+        self.shootLaser.stop()
+
         self.tempWidget = QWidget()
         self.tempWidget.setGeometry(QtCore.QRect(0,0,900,600))
         self.tempWidget.setObjectName("tempWidget")
