@@ -7,6 +7,11 @@ from PyQt5.QtWidgets import (
     QGraphicsView
 )
 
+from PyQt5.QtGui import (
+    QBrush,
+    QPixmap
+)
+
 from PyQt5.QtCore import pyqtSignal, QThread, QObject, QTimer
 
 import time
@@ -97,6 +102,7 @@ class MoveEnemy(QObject):
 class EnemyShoot(QObject):
     can_shoot = pyqtSignal(int, int)
     collision_detected = pyqtSignal(QGraphicsPixmapItem, QGraphicsPixmapItem)
+    collision_detected_with_shield = pyqtSignal(QGraphicsPixmapItem, QGraphicsPixmapItem)
     move_down = pyqtSignal(QGraphicsPixmapItem, int, int)
     next_level = pyqtSignal(int)
 
@@ -206,7 +212,7 @@ class EnemyShoot(QObject):
                     # CHOOSE A SHOOTER
                     #print('Biram neprijatelja')
                     yArray = []
-                    print(len(self.enemies))
+                    #print(len(self.enemies))
                     for enemy in self.enemies:
                         enemyPos = enemy.pos()
                         enemyY = enemyPos.y()
@@ -314,28 +320,36 @@ class EnemyShoot(QObject):
                         else:
                             self.move_down.emit(laser, laserX, laserY)
 
+                        #print(len(self.shields))
                         if (len(self.shields) > 0):
-                            for shield in self.shields:
-                                shieldPos = shield.pos()
-                                shieldXStart = shieldPos.x()
-                                shieldXEnd = shieldXStart + 200
-                                shieldY = shieldPos.y()
+                            for laser in self.lasers:
+                                laserPos = laser.pos()
+                                laserX = laserPos.x()
+                                laserY = laserPos.y() + self.enemyLaserSpeed
+                                for shield in self.shields:
+                                    shieldPos = shield.pos()
+                                    #print(shieldPos)
+                                    shieldXStart = shieldPos.x()
+                                    shieldXEnd = shieldXStart + 200
+                                    shieldY = shieldPos.y()
 
-                                shieldXEqual = False;
-                                if shieldXStart <= laserX <= shieldXEnd:
-                                    shieldXEqual = True
-                                shieldYRange = range(int(shieldY), int(shieldY + 200))
-                                laserYRange = range(int(laserY), int(laserY + 50))
+                                    shieldXEqual = False
 
-                                for y in laserYRange:
-                                    if y in shieldYRange and shieldXEqual:
-                                        print('enemy hit shield with laser')
-                                        self.collision_detected.emit(shield, laser)
-                                        self.remove_laser(laser)
-                                        break
-                                    else:
-                                        self.move_down.emit(laser, laserX, laserY)
+                                    if shieldXStart <= laserX <= shieldXEnd:
+                                        shieldXEqual = True
+                                    shieldYRange = range(int(shieldY), int(shieldY + 50))
+                                    laserYRange = range(int(laserY), int(laserY + 50))
 
+                                    for y in laserYRange:
+                                        if y in shieldYRange and shieldXEqual:
+                                            print('enemy hit shield with laser')
+                                            self.collision_detected_with_shield.emit(laser, shield)
+                                            self.remove_laser(laser)
+                                            break
+                                        else:
+                                            self.move_down.emit(laser, laserX, laserY)
+                        else:
+                            self.move_down.emit(laser, laserX, laserY)
 
             except Exception as e:
                 print('Exception in Moving_Laser: ', str(e))

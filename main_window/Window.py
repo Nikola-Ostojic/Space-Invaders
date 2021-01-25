@@ -113,11 +113,11 @@ class Window(QGraphicsScene):
         self.enemyShoot.can_shoot.connect(self.enemy_shoot_laser)
         self.enemyShoot.move_down.connect(self.move_enemy_laser)
         self.enemyShoot.collision_detected.connect(self.enemy_hit_player)
-        self.enemyShoot.collision_detected.connect(self.enemy_laser_shield_collide)
+        self.enemyShoot.collision_detected_with_shield.connect(self.enemy_laser_shield_collide)
         #self.enemyShoot.next_level.connect(self.next_level)
+        self.enemyShoot.add_player(self.player)
         self.enemyShoot.start()
 
-        self.enemyShoot.add_player(self.player)
 
         for i in range(0, 33):
             self.moveEnemy.add_enemy(self.enemies[i])
@@ -181,14 +181,22 @@ class Window(QGraphicsScene):
         except Exception as e:
             print('Exception in Main_Thread/player_laser_enemy_collide method: ', str(e))
 
-    def enemy_laser_shield_collide(self, shieldLabel: QGraphicsPixmapItem, laserLabel: QGraphicsPixmapItem):
+    def enemy_laser_shield_collide(self, laserLabel: QGraphicsPixmapItem, shieldLabel: QGraphicsPixmapItem):
         try:
+            self.sound = QtMultimedia.QSound('assets/sounds/shipexplosion.wav')
+            self.sound.play()
+            self.enemyShoot.remove_laser(laserLabel)
             laserLabel.hide()
+            
             for shield in self.shields:
                 if shield == shieldLabel:
                     shield.makeDamage()
-                    self.enemyShoot.remove_shield(shield)
-                    print('Damage to shield done')
+                    print(shield.health)
+                    if shield.health <= 0:    
+                        self.enemyShoot.remove_shield(shield)
+                        self.shields.remove(shield)
+                    shield.update_shield(shield)  
+            
         except Exception as e:
             print(str(e))
 
