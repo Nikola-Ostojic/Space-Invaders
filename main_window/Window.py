@@ -22,6 +22,7 @@ from PyQt5.QtGui import QPainter
 from key_notifier import KeyNotifier
 
 from entities.Bullet import Bullet
+from entities.Bullet2 import Bullet2
 from entities.BulletEnemy import BulletEnemy
 
 from PyQt5.QtCore import (
@@ -115,9 +116,12 @@ class Window(QGraphicsScene):
         self.enemyShoot.collision_detected.connect(self.enemy_hit_player)
         self.enemyShoot.collision_detected_with_shield.connect(self.enemy_laser_shield_collide)
         #self.enemyShoot.next_level.connect(self.next_level)
-        self.enemyShoot.add_player(self.player)
+        if numberOfPlayer == 1:
+            self.enemyShoot.add_player(self.player)
+        else:
+            self.enemyShoot.add_player(self.player)
+            self.enemyShoot.add_player(self.player2)
         self.enemyShoot.start()
-
 
         for i in range(0, 33):
             self.moveEnemy.add_enemy(self.enemies[i])
@@ -233,18 +237,6 @@ class Window(QGraphicsScene):
         self.sound.play()
         laserLabel.hide()
         playerLabel.setPos(400, 525)
-        '''
-        if self. == 2:
-            if self.player.playerLabel == playerLabel:
-                self.player.lower_lives()
-                self.update_lives_label(1)
-            if self.playerTwo.playerLabel == playerLabel:
-                self.playerTwo.lower_lives()
-                self.update_lives_label(2)
-        else:
-        '''
-        #self.player.lower_lives()
-        #self.update_lives_label(1)
 
 
     def __update_position__(self, key):
@@ -269,7 +261,6 @@ class Window(QGraphicsScene):
                 laserLabel = Bullet()
                 self.player_shoot_laser(laserLabel, playerPos.x(), playerPos.y())
                
-'''
         ## player 2 ##
         playerPos2 = self.player2.pos()
         dx2 = 0
@@ -279,16 +270,15 @@ class Window(QGraphicsScene):
                 dx2 += PLAYER_SPEED
         elif playerPos2.x() + dx2 >= 845:
             if key == Qt.Key_Left:
-                dx -= PLAYER_SPEED
+                dx2 -= PLAYER_SPEED
         else:
             if key == Qt.Key_Right:
                 dx2 += PLAYER_SPEED
             if key == Qt.Key_Left:
                 dx2 -= PLAYER_SPEED
-        self.player2.setPos(playerPos2.x()+dx, playerPos2.y())
+        self.player2.setPos(playerPos2.x()+dx2, playerPos2.y())
 
-        if key == Qt.Key_Enter:
+        if key == Qt.Key_L:
             if self.playerTwoCanShoot:
-                laserLabel = Bullet()
-                self.player_shoot_laser(laserLabel, playerPos2.x(), playerPos2.y())
-'''
+                laserLabel2 = Bullet2()
+                self.player_shoot_laser(laserLabel2, playerPos2.x(), playerPos2.y())

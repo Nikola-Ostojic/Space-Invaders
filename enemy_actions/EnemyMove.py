@@ -291,7 +291,6 @@ class EnemyShoot(QObject):
                         #print('Broj igraca: ', len(self.players))
                         if len(self.players) > 0:
                             for player in self.players:
-
                                 playerPos = player.pos()
                                 playerXStart = playerPos.x()
                                 playerXEnd = playerPos.x() + 50
