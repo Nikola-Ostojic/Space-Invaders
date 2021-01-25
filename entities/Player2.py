@@ -22,3 +22,9 @@ class Player2(QGraphicsPixmapItem):
     def __init__(self):
         QGraphicsPixmapItem.__init__(self)
         self.setPixmap(QPixmap('assets/ship2.png').scaled(50, 50))
+
+        self.lives=3
+
+    def loseLevel(self):
+        if(self.lives>0):
+            self.lives -= 1

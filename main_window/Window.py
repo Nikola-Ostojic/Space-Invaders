@@ -7,7 +7,7 @@ from PyQt5.QtGui import QImage, QPalette, QBrush
 from PyQt5 import QtWidgets
 from PyQt5.QtCore import Qt
 from PyQt5.QtCore import  QSize
-from PyQt5.QtWidgets import QMainWindow, QWidget, QLabel
+from PyQt5.QtWidgets import QMainWindow, QWidget, QLabel, QHBoxLayout
 from entities.Player import Player
 from entities.Player2 import Player2
 from entities.Enemy import Enemy
@@ -15,7 +15,7 @@ from entities.Shield import Shield
 from PyQt5.QtGui import QPixmap
 from enemy_actions.EnemyMove import MoveEnemy, EnemyShoot
 from player_actions.PlayerShoot import PlayerShoot
-from PyQt5 import QtMultimedia
+from PyQt5 import QtMultimedia, QtCore
 
 from PyQt5 import QtGui
 from PyQt5.QtGui import QPainter
@@ -54,7 +54,7 @@ class Window(QGraphicsScene):
         self.key_notifier.key_signal.connect(self.do_key_press)
         self.key_notifier.start()
 
-        numberOfPlayer = singlemulti
+        self.numberOfPlayer = singlemulti
 
         # use a timer to get 60Hz refresh (hopefully)
         self.timer = QBasicTimer()
@@ -64,12 +64,12 @@ class Window(QGraphicsScene):
         self.set_background()
 
         #Postavljanje Glavnog igraca
-        if (numberOfPlayer == 1):
+        if (self.numberOfPlayer == 1):
             self.player = Player()
             self.player.setPos(400, 525)
             self.addItem(self.player)
 
-        elif (numberOfPlayer == 2):
+        elif (self.numberOfPlayer == 2):
             self.player = Player()
             self.player.setPos(400, 525)
             self.addItem(self.player)
@@ -116,7 +116,7 @@ class Window(QGraphicsScene):
         self.enemyShoot.collision_detected.connect(self.enemy_hit_player)
         self.enemyShoot.collision_detected_with_shield.connect(self.enemy_laser_shield_collide)
         #self.enemyShoot.next_level.connect(self.next_level)
-        if numberOfPlayer == 1:
+        if self.numberOfPlayer == 1:
             self.enemyShoot.add_player(self.player)
         else:
             self.enemyShoot.add_player(self.player)
@@ -147,6 +147,8 @@ class Window(QGraphicsScene):
         self.view.show()
         self.view.setFixedSize(WINDOW_WIDTH,WINDOW_HEIGHT)
         self.setSceneRect(0,0,WINDOW_WIDTH,WINDOW_HEIGHT)  
+
+        self.initUI(self.numberOfPlayer)
             
     def move_enemy(self, enemyPixMap: QGraphicsPixmapItem, newX, newY):
         enemyPixMap.setPos(newX, newY)
@@ -237,7 +239,13 @@ class Window(QGraphicsScene):
         self.sound.play()
         laserLabel.hide()
         playerLabel.setPos(400, 525)
-
+        if self.player == playerLabel:
+            self.player.loseLevel()
+            self.update_GUI_lives(1)
+        if self.numberOfPlayer == 2:
+            if self.player2 == playerLabel:
+                self.player2.loseLevel()
+                self.update_GUI_lives(2)
 
     def __update_position__(self, key):
         playerPos = self.player.pos()
@@ -262,23 +270,121 @@ class Window(QGraphicsScene):
                 self.player_shoot_laser(laserLabel, playerPos.x(), playerPos.y())
                
         ## player 2 ##
-        playerPos2 = self.player2.pos()
-        dx2 = 0
+        if self.numberOfPlayer == 2:
+            playerPos2 = self.player2.pos()
+            dx2 = 0
 
-        if playerPos2.x() + dx2 <= 0:
-            if key == Qt.Key_Right:
-                dx2 += PLAYER_SPEED
-        elif playerPos2.x() + dx2 >= 845:
-            if key == Qt.Key_Left:
-                dx2 -= PLAYER_SPEED
-        else:
-            if key == Qt.Key_Right:
-                dx2 += PLAYER_SPEED
-            if key == Qt.Key_Left:
-                dx2 -= PLAYER_SPEED
-        self.player2.setPos(playerPos2.x()+dx2, playerPos2.y())
+            if playerPos2.x() + dx2 <= 0:
+                if key == Qt.Key_Right:
+                    dx2 += PLAYER_SPEED
+            elif playerPos2.x() + dx2 >= 845:
+                if key == Qt.Key_Left:
+                    dx2 -= PLAYER_SPEED
+            else:
+                if key == Qt.Key_Right:
+                    dx2 += PLAYER_SPEED
+                if key == Qt.Key_Left:
+                    dx2 -= PLAYER_SPEED
+            self.player2.setPos(playerPos2.x()+dx2, playerPos2.y())
 
-        if key == Qt.Key_L:
-            if self.playerTwoCanShoot:
-                laserLabel2 = Bullet2()
-                self.player_shoot_laser(laserLabel2, playerPos2.x(), playerPos2.y())
+            if key == Qt.Key_L:
+                if self.playerTwoCanShoot:
+                    laserLabel2 = Bullet2()
+                    self.player_shoot_laser(laserLabel2, playerPos2.x(), playerPos2.y())
+
+    def initUI(self, numberOfPlayer):
+        self.horizontalLayoutWidget = QWidget()
+        self.horizontalLayoutWidget.setGeometry(QtCore.QRect(13, 10, 871, 10))
+        self.horizontalLayoutWidget.setObjectName("horizontalLayoutWidget")
+
+        self.horizontalLayout = QHBoxLayout(self.horizontalLayoutWidget)
+        self.horizontalLayout.setContentsMargins(0, 0, 0, 0)
+        self.horizontalLayout.setSpacing(230)
+        self.horizontalLayout.setObjectName("horizontalLayout")
+        self.horizontalLayout.setAlignment(Qt.AlignLeft)
+
+        #Zivoti prvog igraca
+        self.lab_lives1 = QtWidgets.QLabel(self.horizontalLayoutWidget)
+        self.lab_lives1.setEnabled(True)
+        font = QtGui.QFont()
+        font.setPointSize(16)
+        font.setBold(True)
+        font.setWeight(75)
+        self.lab_lives1.setFont(font)
+        self.lab_lives1.setObjectName("lab_lives1")
+        self.lab_lives1.setStyleSheet("color:yellow")
+        self.horizontalLayout.addWidget(self.lab_lives1)
+
+       #self.lab_lives1.setText("Player1 Lives: X")
+        self.lab_lives1.setText("Player1 Lives: 3")
+
+        #Level
+        self.lab_level = QtWidgets.QLabel(self.horizontalLayoutWidget)
+        self.lab_level.setEnabled(True)
+        font = QtGui.QFont()
+        font.setPointSize(16)
+        font.setBold(True)
+        font.setWeight(75)
+        self.lab_level.setFont(font)
+        self.lab_level.setObjectName("lab_level")
+        self.lab_level.setStyleSheet("color:yellow")
+        self.horizontalLayout.addWidget(self.lab_level)
+
+        self.lab_level.setText("Level: X")
+
+        #Zivoti drugog igraca
+        if self.numberOfPlayer==2:
+            self.lab_lives2 = QtWidgets.QLabel(self.horizontalLayoutWidget)
+            self.lab_lives2.setEnabled(True)
+            font = QtGui.QFont()
+            font.setPointSize(16)
+            font.setBold(True)
+            font.setWeight(75)
+            self.lab_lives2.setFont(font)
+            self.lab_lives2.setObjectName("lab_lives2")
+            self.lab_lives2.setStyleSheet("color:yellow")
+            self.horizontalLayout.addWidget(self.lab_lives2)
+
+            self.lab_lives2.setText("Player2 Lives: 3")
+        
+
+        self.horizontalLayoutWidget.show()
+        self.horizontalLayoutWidget.setAttribute(QtCore.Qt.WA_TranslucentBackground)
+
+        self.Widget = self.addWidget(self.horizontalLayoutWidget)
+
+
+    def update_GUI_lives(self,playerNo):
+        if playerNo==1:
+            lives=self.player.lives
+            print('Update player 1 lives: ',lives)
+            if lives==3:
+                self.lab_lives1Text = "Player1 Lives: 3"
+                self.lab_lives1.setText(self.lab_lives1Text)
+            elif lives==2:
+                self.lab_lives1Text = "Player1 Lives: 2"
+                self.lab_lives1.setText(self.lab_lives1Text)
+            elif lives==1:
+                self.lab_lives1Text = "Player1 Lives: 1"
+                self.lab_lives1.setText(self.lab_lives1Text)
+            elif lives<=0:
+                self.lab_lives1Text = "Player1 Lives: 0"
+                self.lab_lives1.setText(self.lab_lives1Text)
+                self.player.hide()
+
+        if playerNo==2:
+            lives=self.player2.lives
+            print('Update player 2 lives: ',lives)
+            if lives==3:
+                self.lab_lives2Text = "Player2 Lives: 3"
+                self.lab_lives2.setText(self.lab_lives2Text)
+            elif lives==2:
+                self.lab_lives2Text = "Player2 Lives: 2"
+                self.lab_lives2.setText(self.lab_lives2Text)
+            elif lives==1:
+                self.lab_lives2Text = "Player2 Lives: 1"
+                self.lab_lives2.setText(self.lab_lives2Text)
+            elif lives<=0:
+                self.lab_lives2Text = "Player2 Lives: 0"
+                self.lab_lives2.setText(self.lab_lives2Text)
+                self.player2.hide()
