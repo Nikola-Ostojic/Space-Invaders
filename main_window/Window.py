@@ -1,6 +1,6 @@
 import sys
 from PyQt5.QtCore import QThread
-import multiprocessing as mp
+import multiprocessing
 
 import time
 from PyQt5.QtGui import QImage, QPalette, QBrush
@@ -178,8 +178,16 @@ class Window(QGraphicsScene):
     def keyReleaseEvent(self, event):
         self.key_notifier.rem_key(event.key())
 
+    # POKUSAJ PROCESA
+
     def do_key_press(self, key):
         try:
+            # proc = multiprocessing.Process(target = self.__update_position__, args = [key])
+            # proc.start()
+            # proc.join()
+
+            #(Process(target=__update_position__, args=[key])).start()
+
             self.__update_position__(key)
         except Exception as e:
             print('Exception: {}'.format(str(e)))
