@@ -272,7 +272,7 @@ class Window(QGraphicsScene):
             self.moveEnemy.die()
             self.enemyShoot.die()
             self.key_notifier.die()
-            self.close.emit()
+            self.view.hide()
 
         if playerPos.x() + dx <= 0:
             if key == Qt.Key_D:
@@ -424,8 +424,10 @@ class Window(QGraphicsScene):
     def gameOver(self):
 
         self.timer.stop()
-        self.moveEnemy.stop()
-        self.shootLaser.stop()
+        self.moveEnemy.die()
+        self.shootLaser.die()
+        self.enemyShoot.die()
+        self.key_notifier.die()
 
         self.tempWidget = QWidget()
         self.tempWidget.setGeometry(QtCore.QRect(0,0,900,600))
@@ -455,7 +457,5 @@ class Window(QGraphicsScene):
         self.tempWidget.setStyleSheet("background-color: rgba(255,255,255,70);")
 
         self.Widget = self.addWidget(self.tempWidget)
-
-
-        # ZAUSTAVITI THREADOVE U GAME OVERU KAKO BI SE SVE ZAMRZLO I ISPISALO GAME OVER
-        # Kad se bude implementiralo gasenje threadova onda se nece mesati labeli zivota sa labelom Game Over
+        
+        
