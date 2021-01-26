@@ -66,10 +66,6 @@ class Window(QGraphicsScene):
         self.numberOfPlayer = singlemulti
         self.level_numberrr = level_number
 
-        # use a timer to get 60Hz refresh (hopefully)
-        self.timer = QBasicTimer()
-        self.timer.start(FRAME_TIME_MS, self)
-
         # Postavljanje pozadine
         self.set_background()
 
