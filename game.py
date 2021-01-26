@@ -41,20 +41,29 @@ class Game(QMainWindow):
         self.mainMenu.show()
 
 
-    def playMultiplayer(self):
-        self.game = Window(2)       
+    def playMultiplayer(self, level = 1):
+        self.game = Window(2, level)
+
+        self.game.next_level2.connect(self.increase_level_multi)
+    
 
 
     def quit(self):
         sys.exit()
 
-    def playGame(self):
-        self.game = Window(1)
-        self.game.close.connect(self.close)
+    def playGame(self, level = 1):
+        self.game = Window(1, level)
+        
+        self.game.next_level.connect(self.increase_level_single)
 
-    def close(self):
-        self.game = []
-        #self.game.close()
+    def increase_level_single(self, level):
+        self.playGame(level)
+
+
+    def increase_level_multi(self, level):
+        self.playMultiplayer(level)
+
+
 
     # self.game.shootLaser.die()
     # self.game.moveEnemy.die()

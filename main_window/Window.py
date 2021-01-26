@@ -48,17 +48,23 @@ FRAME_TIME_MS = 16  # ms/frame
 PLAYER_SPEED = 8
 
 class Window(QGraphicsScene):
-    
-    close = pyqtSignal()
 
-    def __init__(self, singlemulti, parent = None):
+    next_level = pyqtSignal(int)
+
+    next_level2 = pyqtSignal(int)
+
+    def __init__(self, singlemulti, level_number, parent = None):
         QGraphicsScene.__init__(self, parent)
+
+        
+
 
         self.key_notifier = KeyNotifier()
         self.key_notifier.key_signal.connect(self.do_key_press)
         self.key_notifier.start()
 
         self.numberOfPlayer = singlemulti
+        self.level_numberrr = level_number
 
         # use a timer to get 60Hz refresh (hopefully)
         self.timer = QBasicTimer()
@@ -153,9 +159,9 @@ class Window(QGraphicsScene):
         self.view.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.view.show()
         self.view.setFixedSize(WINDOW_WIDTH,WINDOW_HEIGHT)
-        self.setSceneRect(0,0,WINDOW_WIDTH,WINDOW_HEIGHT)  
+        self.setSceneRect(0,0,WINDOW_WIDTH,WINDOW_HEIGHT)
 
-        self.initUI(self.numberOfPlayer)
+        self.initUI(self.numberOfPlayer, self.level_numberrr)
             
     def move_enemy(self, enemyPixMap: QGraphicsPixmapItem, newX, newY):
         enemyPixMap.setPos(newX, newY)
@@ -198,6 +204,28 @@ class Window(QGraphicsScene):
             self.remove_enemy_label(enemyLabel)        
             self.enemyShoot.remove_enemy(enemyLabel)
             self.moveEnemy.remove_enemy(enemyLabel)
+            
+
+            if len(self.enemies) == 1:                
+                if (self.numberOfPlayer == 1):
+                    
+                    self.shootLaser.die()
+                    self.moveEnemy.die()
+                    self.enemyShoot.die()
+                    self.key_notifier.die()
+                    self.key_notifier.keys.clear()
+                    self.view.hide()
+                    self.next_level.emit(self.level_numberrr + 1)
+                elif (self.numberOfPlayer == 2):
+                    
+                    self.shootLaser.die()
+                    self.moveEnemy.die()
+                    self.enemyShoot.die()
+                    self.key_notifier.keys.clear()
+                    self.key_notifier.die()
+                    self.view.hide()
+                    self.next_level2.emit(self.level_numberrr + 1)
+
 
         except Exception as e:
             print('Exception in Main_Thread/player_laser_enemy_collide method: ', str(e))
@@ -253,7 +281,7 @@ class Window(QGraphicsScene):
         self.sound = QtMultimedia.QSound('assets/sounds/shipexplosion.wav')
         self.sound.play()
         laserLabel.hide()
-        #playerLabel.setPos(400, 525)   Bug, zasto mu menjati poziciju
+
         if self.player == playerLabel:
             self.player.loseLevel()
             self.update_GUI_lives(1)
@@ -263,7 +291,8 @@ class Window(QGraphicsScene):
                 self.update_GUI_lives(2)
 
     def __update_position__(self, key):
-        playerPos = self.player.pos()
+        
+        playerPos = self.player.pos() 
         dx = 0     
 
         # Closing program    
@@ -274,7 +303,7 @@ class Window(QGraphicsScene):
             self.key_notifier.die()
             self.view.hide()
 
-        if playerPos.x() + dx <= 0:
+        if playerPos.x() + dx <= 0  and self.player:
             if key == Qt.Key_D:
                 dx += PLAYER_SPEED        
         elif playerPos.x() + dx >= 845:
@@ -291,9 +320,10 @@ class Window(QGraphicsScene):
             if self.playerOneCanShoot:
                 laserLabel = Bullet()
                 self.player_shoot_laser(laserLabel, playerPos.x(), playerPos.y())
+
                
         ## player 2 ##
-        if self.numberOfPlayer == 2:
+        if self.numberOfPlayer == 2 and self.player2:
             playerPos2 = self.player2.pos()
             dx2 = 0
 
@@ -315,14 +345,14 @@ class Window(QGraphicsScene):
                     laserLabel2 = Bullet2()
                     self.player_shoot_laser(laserLabel2, playerPos2.x(), playerPos2.y())
 
-    def initUI(self, numberOfPlayer):
+    def initUI(self, numberOfPlayer, level_number):
         self.horizontalLayoutWidget = QWidget()
         self.horizontalLayoutWidget.setGeometry(QtCore.QRect(13, 10, 871, 10))
         self.horizontalLayoutWidget.setObjectName("horizontalLayoutWidget")
 
         self.horizontalLayout = QHBoxLayout(self.horizontalLayoutWidget)
         self.horizontalLayout.setContentsMargins(0, 0, 0, 0)
-        self.horizontalLayout.setSpacing(230)
+        self.horizontalLayout.setSpacing(150)
         self.horizontalLayout.setObjectName("horizontalLayout")
         self.horizontalLayout.setAlignment(Qt.AlignLeft)
 
@@ -352,7 +382,7 @@ class Window(QGraphicsScene):
         self.lab_level.setStyleSheet("color:yellow")
         self.horizontalLayout.addWidget(self.lab_level)
 
-        self.lab_level.setText("Level: X")
+        self.lab_level.setText("Level: " + str(level_number))
 
         #Zivoti drugog igraca
         if self.numberOfPlayer==2:
@@ -394,6 +424,7 @@ class Window(QGraphicsScene):
                 self.lab_lives1.setText(self.lab_lives1Text)
                 self.flag_playerOneDead=True
                 self.player.hide()
+                self.player = None
 
         if playerNo==2:
             lives=self.player2.lives
@@ -412,6 +443,7 @@ class Window(QGraphicsScene):
                 self.lab_lives2.setText(self.lab_lives2Text)
                 self.flag_playerTwoDead=True
                 self.player2.hide()
+                self.player2 = None
 
         if self.numberOfPlayer==1:
             if self.flag_playerOneDead==True:
@@ -419,6 +451,8 @@ class Window(QGraphicsScene):
         else:
             if self.flag_playerOneDead==True and self.flag_playerTwoDead==True:
                 self.gameOver()
+
+    
 
 
     def gameOver(self):
@@ -457,5 +491,7 @@ class Window(QGraphicsScene):
         self.tempWidget.setStyleSheet("background-color: rgba(255,255,255,70);")
 
         self.Widget = self.addWidget(self.tempWidget)
+
+
         
         
