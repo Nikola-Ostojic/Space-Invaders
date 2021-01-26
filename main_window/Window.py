@@ -22,7 +22,6 @@ from PyQt5.QtGui import QPainter
 from key_notifier import KeyNotifier
 
 from entities.Bullet import Bullet
-from entities.Bullet2 import Bullet2
 from entities.BulletEnemy import BulletEnemy
 
 from PyQt5.QtCore import (
@@ -244,7 +243,6 @@ class Window(QGraphicsScene):
             for shield in self.shields:
                 if shield == shieldLabel:
                     shield.makeDamage()
-                    #print(shield.health)
                     if shield.health <= 0:    
                         self.enemyShoot.remove_shield(shield)
                         self.shields.remove(shield)
@@ -296,34 +294,36 @@ class Window(QGraphicsScene):
 
     def __update_position__(self, key):
         
-        playerPos = self.player.pos() 
-        dx = 0     
+        if self.player:
+            playerPos = self.player.pos() 
 
-        # Closing program    
-        if key == Qt.Key_T:
-            self.shootLaser.die()
-            self.moveEnemy.die()
-            self.enemyShoot.die()
-            self.key_notifier.die()
-            self.view.hide()
+            dx = 0         
 
-        if playerPos.x() + dx <= 0  and self.player:
-            if key == Qt.Key_D:
-                dx += PLAYER_SPEED        
-        elif playerPos.x() + dx >= 845:
-            if key == Qt.Key_A:
-                dx -= PLAYER_SPEED
-        else:
-            if key == Qt.Key_D:
-                dx += PLAYER_SPEED
-            if key == Qt.Key_A:
-                dx -= PLAYER_SPEED
-        self.player.setPos(playerPos.x()+dx, playerPos.y())
+            # Closing program    
+            if key == Qt.Key_T:
+                self.shootLaser.die()
+                self.moveEnemy.die()
+                self.enemyShoot.die()
+                self.key_notifier.die()
+                self.view.hide()
 
-        if key == Qt.Key_Space:
-            if self.playerOneCanShoot:
-                laserLabel = Bullet()
-                self.player_shoot_laser(laserLabel, playerPos.x(), playerPos.y())
+            if playerPos.x() + dx <= 0:
+                if key == Qt.Key_D:
+                    dx += PLAYER_SPEED        
+            elif playerPos.x() + dx >= 845:
+                if key == Qt.Key_A:
+                    dx -= PLAYER_SPEED
+            else:
+                if key == Qt.Key_D:
+                    dx += PLAYER_SPEED
+                if key == Qt.Key_A:
+                    dx -= PLAYER_SPEED
+            self.player.setPos(playerPos.x()+dx, playerPos.y())
+
+            if key == Qt.Key_Space:
+                if self.playerOneCanShoot:
+                    laserLabel = Bullet()
+                    self.player_shoot_laser(laserLabel, playerPos.x(), playerPos.y())
 
                
         ## player 2 ##
@@ -344,9 +344,9 @@ class Window(QGraphicsScene):
                     dx2 -= PLAYER_SPEED
             self.player2.setPos(playerPos2.x()+dx2, playerPos2.y())
 
-            if key == Qt.Key_L:
+            if key == Qt.Key_L and self.player2:
                 if self.playerTwoCanShoot:
-                    laserLabel2 = Bullet2()
+                    laserLabel2 = Bullet()
                     self.player_shoot_laser(laserLabel2, playerPos2.x(), playerPos2.y())
 
     def initUI(self, numberOfPlayer, level_number):
@@ -413,7 +413,7 @@ class Window(QGraphicsScene):
     def update_GUI_lives(self,playerNo):
         if playerNo==1:
             lives=self.player.lives
-            #print('Update player 1 lives: ',lives)
+           
             if lives==3:
                 self.lab_lives1Text = "Player1 Lives: 3"
                 self.lab_lives1.setText(self.lab_lives1Text)
@@ -432,7 +432,7 @@ class Window(QGraphicsScene):
 
         if playerNo==2:
             lives=self.player2.lives
-            #print('Update player 2 lives: ',lives)
+
             if lives==3:
                 self.lab_lives2Text = "Player2 Lives: 3"
                 self.lab_lives2.setText(self.lab_lives2Text)
@@ -452,20 +452,14 @@ class Window(QGraphicsScene):
         if self.numberOfPlayer==1:
             if self.flag_playerOneDead==True:
                 self.gameOver()
-        else:
+        elif self.numberOfPlayer==2:
             if self.flag_playerOneDead==True and self.flag_playerTwoDead==True:
                 self.gameOver()
 
     
 
 
-    def gameOver(self):
-
-        self.timer.stop()
-        self.moveEnemy.die()
-        self.shootLaser.die()
-        self.enemyShoot.die()
-        self.key_notifier.die()
+    def gameOver(self):   
 
         self.tempWidget = QWidget()
         self.tempWidget.setGeometry(QtCore.QRect(0,0,900,600))
@@ -490,11 +484,17 @@ class Window(QGraphicsScene):
         self.lab_gameOver.setStyleSheet("color: red; background-color: transparent;")
         self.horizontalLayout.addWidget(self.lab_gameOver)
         self.lab_gameOver.setText("GAME OVER")
+        
 
 
         self.tempWidget.setStyleSheet("background-color: rgba(255,255,255,70);")
 
         self.Widget = self.addWidget(self.tempWidget)
+
+        self.moveEnemy.die()
+        self.shootLaser.die()
+        self.enemyShoot.die()
+        self.key_notifier.die()
 
 
         
