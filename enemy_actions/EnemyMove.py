@@ -303,7 +303,7 @@ class EnemyShoot(QObject):
 
                                 # nova provera za Y osu zbog brzih lasera
                                 playerYRange = range(int(playerY), int(playerY + 50))
-                                laserYRange = range(int(laserY), int(laserY + 50))
+                                laserYRange = range(int(laserY), int(laserY + 10))
                                 #print('Player Y Range: {} - {}'.format(playerYRange[1], playerYRange[-1]))
                                 #print('Laser Y Range: {} - {}'.format(laserYRange[1], laserYRange[-1]))
 
@@ -329,7 +329,7 @@ class EnemyShoot(QObject):
                                     shieldPos = shield.pos()
                                     #print(shieldPos)
                                     shieldXStart = shieldPos.x()
-                                    shieldXEnd = shieldXStart + 200
+                                    shieldXEnd = shieldXStart + 150
                                     shieldY = shieldPos.y()
 
                                     shieldXEqual = False
@@ -337,7 +337,7 @@ class EnemyShoot(QObject):
                                     if shieldXStart <= laserX <= shieldXEnd:
                                         shieldXEqual = True
                                     shieldYRange = range(int(shieldY), int(shieldY + 50))
-                                    laserYRange = range(int(laserY), int(laserY + 50))
+                                    laserYRange = range(int(laserY), int(laserY + 10))
 
                                     for y in laserYRange:
                                         if y in shieldYRange and shieldXEqual:

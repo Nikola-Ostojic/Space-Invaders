@@ -5,8 +5,7 @@ import multiprocessing
 import time
 from PyQt5.QtGui import QImage, QPalette, QBrush
 from PyQt5 import QtWidgets
-from PyQt5.QtCore import Qt
-from PyQt5.QtCore import  QSize
+from PyQt5.QtCore import Qt, QTimer, QSize
 from PyQt5.QtWidgets import QMainWindow, QWidget, QLabel, QHBoxLayout
 from entities.Player import Player
 from entities.Player2 import Player2
@@ -216,23 +215,44 @@ class Window(QGraphicsScene):
 
             if len(self.enemies) == 1:                
                 if (self.numberOfPlayer == 1):
-                    
+                    # Gasenje threadova
                     self.shootLaser.die()
                     self.moveEnemy.die()
                     self.enemyShoot.die()
-                    self.key_notifier.die()
-                    self.key_notifier.keys.clear()
-                    self.view.hide()
-                    self.next_level.emit(self.level_numberrr + 1)
+                    # Unistavanje postojecih projektila na screenu
+                    for laser in self.shootLaser.laserLabels:
+                        self.removeItem(laser)
+                    for laser in self.enemyShoot.lasers:
+                        self.removeItem(laser)
+                    for shield in self.shields:
+                        self.removeItem(shield)
+                    self.shields.clear()
+
+                    # Povecavanje nivoa za jedan i restart neprijatelja update gui
+                    self.level_numberrr += 1
+                    self.level_advance()
+                    self.update_GUI_lives(self.numberOfPlayer)
+                    self.Widget.setZValue(50)
+
                 elif (self.numberOfPlayer == 2):
-                    
+                    # Gasenje threadova
                     self.shootLaser.die()
                     self.moveEnemy.die()
                     self.enemyShoot.die()
-                    self.key_notifier.keys.clear()
-                    self.key_notifier.die()
-                    self.view.hide()
-                    self.next_level2.emit(self.level_numberrr + 1)
+                    # Unistavanje postojecih projektila na screenu
+                    for laser in self.shootLaser.laserLabels:
+                        self.removeItem(laser)
+                    for laser in self.enemyShoot.lasers:
+                        self.removeItem(laser)
+                    for shield in self.shields:
+                        self.removeItem(shield)
+                    self.shields.clear()
+
+                    # Povecavanje nivoa za jedan i restart neprijatelja update gui
+                    self.level_numberrr += 1
+                    self.level_advance()
+                    self.update_GUI_lives(self.numberOfPlayer)
+                    self.Widget.setZValue(50)
 
 
         except Exception as e:
@@ -303,7 +323,7 @@ class Window(QGraphicsScene):
             dx = 0         
 
             # Closing program    
-            if key == Qt.Key_T:
+            if key == Qt.Key_Escape:
                 self.shootLaser.die()
                 self.moveEnemy.die()
                 self.enemyShoot.die()
@@ -431,11 +451,12 @@ class Window(QGraphicsScene):
                 self.lab_lives1.setText(self.lab_lives1Text)
                 self.flag_playerOneDead=True
                 self.player.hide()
-                self.player = None
+                self.playerOneCanShoot = False
+                #self.player = None
 
         if playerNo==2:
             lives=self.player2.lives
-
+            
             if lives==3:
                 self.lab_lives2Text = "Player2 Lives: 3"
                 self.lab_lives2.setText(self.lab_lives2Text)
@@ -450,7 +471,11 @@ class Window(QGraphicsScene):
                 self.lab_lives2.setText(self.lab_lives2Text)
                 self.flag_playerTwoDead=True
                 self.player2.hide()
-                self.player2 = None
+                self.playerTwoCanShoot = False
+                #self.player2 = None
+
+        self.lab_levelText = "Level: {}".format(self.level_numberrr)
+        self.lab_level.setText(self.lab_levelText)
 
         if self.numberOfPlayer==1:
             if self.flag_playerOneDead==True:
@@ -498,4 +523,105 @@ class Window(QGraphicsScene):
         self.key_notifier.die()
 
 
+    def level_advance(self):
+        
+        self.levelUP()
+
+        # Set enemy start positions
+        self.update_GUI_lives(self.numberOfPlayer)
+        self.enemies = []
+        self.enemies.append(Enemy())
+        self.enemies[0].setPos(100, 50)
+
+
+        for i in range(0, 33):
+            self.enemies.append(Enemy())
+            if i == 11:
+                self.enemies[i].setPos(self.enemies[0].x(), self.enemies[0].y() + 60)
+                continue
+            if i == 22:
+                self.enemies[i].setPos(self.enemies[11].x(), self.enemies[11].y() + 60)
+                continue              
+            self.enemies[i].setPos(self.enemies[i - 1].x() + 60, self.enemies[i - 1].y())     
+
+        for i in range(0, 33):
+            self.addItem(self.enemies[i])
+
+        self.moveEnemy = MoveEnemy()
+        self.moveEnemy.calc_done.connect(self.move_enemy)
+        self.moveEnemy.start()
+
+        self.enemyShoot = EnemyShoot()
+        self.enemyShoot.can_shoot.connect(self.enemy_shoot_laser)
+        self.enemyShoot.move_down.connect(self.move_enemy_laser)
+        self.enemyShoot.collision_detected.connect(self.enemy_hit_player)
+        self.enemyShoot.collision_detected_with_shield.connect(self.enemy_laser_shield_collide)
+        if self.numberOfPlayer == 1:
+            self.enemyShoot.add_player(self.player)
+        else:
+            # PROVERA AKO JE MRTAV NE IGRA VISE
+            if self.player != None:
+                self.enemyShoot.add_player(self.player)
+            if self.player2 != None:
+                self.enemyShoot.add_player(self.player2)
+        self.enemyShoot.start()
+
+        self.shootLaser = PlayerShoot()
+        self.shootLaser.calc_done.connect(self.move_laser_up)
+        self.shootLaser.collision_detected.connect(self.player_laser_enemy_collide)
+        self.shootLaser.start()
+
+        for i in range(0, 33):
+            self.moveEnemy.add_enemy(self.enemies[i])
+            self.shootLaser.add_enemy(self.enemies[i])
+            self.enemyShoot.add_enemy(self.enemies[i])
+
+
+        #Dodavanje stitova
+        self.shields = []
+        self.shields.append(Shield())
+        self.shields[0].setPos(50, 350)
+        self.shields.append(Shield())
+        self.shields[1].setPos(375, 350)
+        self.shields.append(Shield())
+        self.shields[2].setPos(700, 350)
+
+        for i in range(0, 3):
+            self.addItem(self.shields[i])
+            self.enemyShoot.add_shield(self.shields[i])
+      
+    def levelUP(self):   
+
+        self.tempWidget = QWidget()
+        self.tempWidget.setGeometry(QtCore.QRect(0,0,900,600))
+        self.tempWidget.setObjectName("tempWidget")
+
+        self.horizontalLayout = QHBoxLayout(self.tempWidget)
+        self.horizontalLayout.setContentsMargins(0, 0, 0, 0)
+        self.horizontalLayout.setSpacing(230)
+        self.horizontalLayout.setObjectName("horizontalLayout")
+        self.horizontalLayout.setAlignment(Qt.AlignCenter)
+
+        #Labela next level
+        self.lab_nextLevel = QtWidgets.QLabel(self.tempWidget)
+        self.lab_nextLevel.setEnabled(True)
+        font = QtGui.QFont()
+        font.setFamily("Calibri")
+        font.setPointSize(30)
+        font.setBold(True)
+        font.setWeight(QFont.Bold)
+        self.lab_nextLevel.setFont(font)
+        self.lab_nextLevel.setObjectName("lab_nextLevel")
+        self.lab_nextLevel.setStyleSheet("color: GREEN; background-color: transparent;")
+        self.horizontalLayout.addWidget(self.lab_nextLevel)
+        self.lab_nextLevel.setText("NEXT LEVEL")
+        
+        self.tempWidget.setStyleSheet("background-color: rgba(255,255,255,0)")
+        self.WidgetLEVEL = self.addWidget(self.tempWidget)
+
+        self.timer=QTimer()
+        self.timer.timeout.connect(self.levelUPdelete)
+        self.timer.start(2000)
     
+    def levelUPdelete(self):
+        self.WidgetLEVEL.hide()

@@ -19,7 +19,7 @@ class Game(QMainWindow):
         self.setFixedWidth(341)
         self.setFixedHeight(441)
 
-        
+
 
         #print('Pozvan konstruktor menu')
         self.menu()
@@ -47,13 +47,11 @@ class Game(QMainWindow):
         self.game.next_level2.connect(self.increase_level_multi)
     
 
-
     def quit(self):
         sys.exit()
 
     def playGame(self, level = 1):
         self.game = Window(1, level)
-        
         self.game.next_level.connect(self.increase_level_single)
 
     def increase_level_single(self, level):
@@ -62,7 +60,6 @@ class Game(QMainWindow):
 
     def increase_level_multi(self, level):
         self.playMultiplayer(level)
-
 
 
     # self.game.shootLaser.die()

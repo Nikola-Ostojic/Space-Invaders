@@ -23,5 +23,5 @@ class Bullet(QGraphicsPixmapItem):
 
     def __init__(self, parent = None):
         QGraphicsPixmapItem.__init__(self,parent)
-        self.setPixmap(QPixmap('assets/laser2.png').scaled(20, 40))
+        self.setPixmap(QPixmap('assets/laser.png'))
         self.sound_shoot.play()
