@@ -51,6 +51,10 @@ class Window(QGraphicsScene):
     next_level = pyqtSignal(int)
 
     next_level2 = pyqtSignal(int)
+    
+    sound_invaderkilled = QtMultimedia.QSound('assets/sounds/invaderkilled.wav')
+    sound_shipexplosion = QtMultimedia.QSound('assets/sounds/shipexplosion.wav')
+
 
     def __init__(self, singlemulti, level_number, parent = None):
         QGraphicsScene.__init__(self, parent)
@@ -157,6 +161,7 @@ class Window(QGraphicsScene):
         self.setSceneRect(0,0,WINDOW_WIDTH,WINDOW_HEIGHT)
 
         self.initUI(self.numberOfPlayer, self.level_numberrr)
+
             
     def move_enemy(self, enemyPixMap: QGraphicsPixmapItem, newX, newY):
         enemyPixMap.setPos(newX, newY)
@@ -199,8 +204,7 @@ class Window(QGraphicsScene):
 
     def player_laser_enemy_collide(self, enemyLabel: QGraphicsPixmapItem, laserLabel: QGraphicsPixmapItem):
         try:
-            self.sound = QtMultimedia.QSound('assets/sounds/invaderkilled.wav')
-            self.sound.play()
+            self.sound_invaderkilled.play()
             enemyLabel.hide()
             laserLabel.hide()
             self.shootLaser.remove_laser(laserLabel)
@@ -236,8 +240,7 @@ class Window(QGraphicsScene):
 
     def enemy_laser_shield_collide(self, laserLabel: QGraphicsPixmapItem, shieldLabel: QGraphicsPixmapItem):
         try:
-            self.sound = QtMultimedia.QSound('assets/sounds/shipexplosion.wav')
-            self.sound.play()
+            self.sound_shipexplosion.play()
             self.enemyShoot.remove_laser(laserLabel)
             laserLabel.hide()
             
@@ -281,8 +284,7 @@ class Window(QGraphicsScene):
             self.enemyShoot.remove_laser(enemyLaser)
 
     def enemy_hit_player(self, laserLabel: QGraphicsPixmapItem, playerLabel: QGraphicsPixmapItem):
-        self.sound = QtMultimedia.QSound('assets/sounds/shipexplosion.wav')
-        self.sound.play()
+        self.sound_shipexplosion.play()
         laserLabel.hide()
 
         if self.player == playerLabel:
@@ -357,7 +359,7 @@ class Window(QGraphicsScene):
 
         self.horizontalLayout = QHBoxLayout(self.horizontalLayoutWidget)
         self.horizontalLayout.setContentsMargins(0, 0, 0, 0)
-        self.horizontalLayout.setSpacing(150)
+        self.horizontalLayout.setSpacing(230)
         self.horizontalLayout.setObjectName("horizontalLayout")
         self.horizontalLayout.setAlignment(Qt.AlignLeft)
 
@@ -458,8 +460,6 @@ class Window(QGraphicsScene):
                 self.gameOver()
 
     
-
-
     def gameOver(self):   
 
         self.tempWidget = QWidget()
@@ -498,5 +498,4 @@ class Window(QGraphicsScene):
         self.key_notifier.die()
 
 
-        
-        
+    
