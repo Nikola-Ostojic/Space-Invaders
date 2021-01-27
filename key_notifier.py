@@ -40,6 +40,13 @@ class KeyNotifier(QObject):
     def rem_key(self, key):
         self.keys.remove(key)
 
+    def exists_key(self, key):
+        if (key in self.keys):
+            return True
+        else:
+            return False
+            
+
     def die(self):
         """
         End notifications.

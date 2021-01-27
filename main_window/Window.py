@@ -175,7 +175,8 @@ class Window(QGraphicsScene):
         self.key_notifier.add_key(event.key())
 
     def keyReleaseEvent(self, event):
-        self.key_notifier.rem_key(event.key())
+        if (self.key_notifier.exists_key(event.key())):
+            self.key_notifier.rem_key(event.key())
 
     # POKUSAJ PROCESA
 
