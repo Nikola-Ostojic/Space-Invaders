@@ -19,6 +19,7 @@ from time import sleep
 from random import randint
 
 BULLET_SPEED = 10
+ENEMY_SPEED = 7
 COOLDOWN = 1000
 
 class MoveEnemy(QObject):
@@ -32,6 +33,8 @@ class MoveEnemy(QObject):
         self.goLeft = True
         self.goRight = False
        
+
+        self.enemyMoveSpeed = ENEMY_SPEED
         self.thread = QThread()
         self.moveToThread(self.thread)
         self.thread.started.connect(self.__work__)
@@ -50,6 +53,7 @@ class MoveEnemy(QObject):
         self.threadWorking = False
         self.thread.quit()
 
+
     #Kretanje neprijatelja
     def __work__(self):
         while self.threadWorking:
@@ -63,7 +67,7 @@ class MoveEnemy(QObject):
                         if enemyX > 50:
                             self.goLeft = True
                             self.goRight = False
-                            self.calc_done.emit(enemy, enemyX - 10, enemyY)
+                            self.calc_done.emit(enemy, enemyX - self.enemyMoveSpeed, enemyY)
                         else:
                             for enemy in self.enemies:
                                 enemyPos = enemy.pos()
@@ -84,7 +88,7 @@ class MoveEnemy(QObject):
                         if enemyX < 800:
                             self.goRight = True
                             self.goLeft = False
-                            self.calc_done.emit(enemy, enemyX + 10, enemyY)
+                            self.calc_done.emit(enemy, enemyX + self.enemyMoveSpeed, enemyY)
                         else:
                             for enemy in self.enemies:
                                 enemyPos = enemy.pos()
@@ -159,16 +163,6 @@ class EnemyShoot(QObject):
     def remove_shield(self, shieldLabel: QGraphicsPixmapItem):
         if shieldLabel in self.shields:
             self.shields.remove(shieldLabel)
-
-    def update_level(self, newInterval, newLaserSpeed):
-        if (self.shootingTimerInterval - newInterval) >= 200:
-            self.shootingTimerInterval -= newInterval
-            self.shootingTimer.setInterval(self.shootingTimerInterval)
-            #print('Changed shooting interval to: ', self.shootingTimerInterval)
-
-        if (self.enemyLaserSpeed + newLaserSpeed) <= 18:
-            self.enemyLaserSpeed += newLaserSpeed
-            #print('Changed enemy laser speed to: ', self.enemyLaserSpeed)
 
     def die(self):
         self.threadWorking = False

@@ -25,6 +25,6 @@ class Player2(QGraphicsPixmapItem):
 
         self.lives=3
 
-    def loseLevel(self):
+    def loseLife(self):
         if(self.lives>0):
             self.lives -= 1

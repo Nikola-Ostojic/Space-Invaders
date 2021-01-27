@@ -94,17 +94,23 @@ class Window(QGraphicsScene):
         self.enemies.append(Enemy())
         self.enemies[0].setPos(100, 50)
 
-        for i in range(0, 33):
+        for i in range(0, 55):
             self.enemies.append(Enemy())
             if i == 11:
                 self.enemies[i].setPos(self.enemies[0].x(), self.enemies[0].y() + 60)
                 continue
             if i == 22:
                  self.enemies[i].setPos(self.enemies[11].x(), self.enemies[11].y() + 60)
-                 continue              
+                 continue
+            if i == 33:
+                 self.enemies[i].setPos(self.enemies[22].x(), self.enemies[22].y() + 60)
+                 continue    
+            if i == 44:
+                 self.enemies[i].setPos(self.enemies[33].x(), self.enemies[33].y() + 60)
+                 continue         
             self.enemies[i].setPos(self.enemies[i - 1].x() + 60, self.enemies[i - 1].y())     
 
-        for i in range(0, 33):
+        for i in range(0, 55):
             self.addItem(self.enemies[i])
             
         # Pomeranje neprijatelja
@@ -134,7 +140,7 @@ class Window(QGraphicsScene):
             self.enemyShoot.add_player(self.player2)
         self.enemyShoot.start()
 
-        for i in range(0, 33):
+        for i in range(0, 55):
             self.moveEnemy.add_enemy(self.enemies[i])
             self.shootLaser.add_enemy(self.enemies[i])
             self.enemyShoot.add_enemy(self.enemies[i])
@@ -231,7 +237,6 @@ class Window(QGraphicsScene):
                     # Povecavanje nivoa za jedan i restart neprijatelja update gui
                     self.level_numberrr += 1
                     self.level_advance()
-                    self.update_GUI_lives(self.numberOfPlayer)
                     self.Widget.setZValue(50)
 
                 elif (self.numberOfPlayer == 2):
@@ -251,7 +256,6 @@ class Window(QGraphicsScene):
                     # Povecavanje nivoa za jedan i restart neprijatelja update gui
                     self.level_numberrr += 1
                     self.level_advance()
-                    self.update_GUI_lives(self.numberOfPlayer)
                     self.Widget.setZValue(50)
 
 
@@ -308,12 +312,12 @@ class Window(QGraphicsScene):
         laserLabel.hide()
 
         if self.player == playerLabel:
-            self.player.loseLevel()
-            self.update_GUI_lives(1)
+            self.player.loseLife()
         if self.numberOfPlayer == 2:
             if self.player2 == playerLabel:
-                self.player2.loseLevel()
-                self.update_GUI_lives(2)
+                self.player2.loseLife()
+
+        self.update_GUI_lives(self.numberOfPlayer)
 
     def __update_position__(self, key):
         
@@ -332,7 +336,7 @@ class Window(QGraphicsScene):
 
             if playerPos.x() + dx <= 0:
                 if key == Qt.Key_D:
-                    dx += PLAYER_SPEED        
+                    dx += PLAYER_SPEED     
             elif playerPos.x() + dx >= 845:
                 if key == Qt.Key_A:
                     dx -= PLAYER_SPEED
@@ -367,7 +371,7 @@ class Window(QGraphicsScene):
                     dx2 -= PLAYER_SPEED
             self.player2.setPos(playerPos2.x()+dx2, playerPos2.y())
 
-            if key == Qt.Key_L and self.player2:
+            if key == Qt.Key_Control and self.player2:
                 if self.playerTwoCanShoot:
                     laserLabel2 = Bullet()
                     self.player_shoot_laser(laserLabel2, playerPos2.x(), playerPos2.y())
@@ -434,25 +438,25 @@ class Window(QGraphicsScene):
 
 
     def update_GUI_lives(self,playerNo):
-        if playerNo==1:
-            lives=self.player.lives
-           
-            if lives==3:
-                self.lab_lives1Text = "Player1 Lives: 3"
-                self.lab_lives1.setText(self.lab_lives1Text)
-            elif lives==2:
-                self.lab_lives1Text = "Player1 Lives: 2"
-                self.lab_lives1.setText(self.lab_lives1Text)
-            elif lives==1:
-                self.lab_lives1Text = "Player1 Lives: 1"
-                self.lab_lives1.setText(self.lab_lives1Text)
-            elif lives<=0:
-                self.lab_lives1Text = "Player1 Lives: 0"
-                self.lab_lives1.setText(self.lab_lives1Text)
-                self.flag_playerOneDead=True
-                self.player.hide()
-                self.playerOneCanShoot = False
-                #self.player = None
+        #if playerNo==1:
+        lives=self.player.lives
+        
+        if lives==3:
+            self.lab_lives1Text = "Player1 Lives: 3"
+            self.lab_lives1.setText(self.lab_lives1Text)
+        elif lives==2:
+            self.lab_lives1Text = "Player1 Lives: 2"
+            self.lab_lives1.setText(self.lab_lives1Text)
+        elif lives==1:
+            self.lab_lives1Text = "Player1 Lives: 1"
+            self.lab_lives1.setText(self.lab_lives1Text)
+        elif lives<=0:
+            self.lab_lives1Text = "Player1 Lives: 0"
+            self.lab_lives1.setText(self.lab_lives1Text)
+            self.flag_playerOneDead=True
+            self.player.hide()
+            self.playerOneCanShoot = False
+            #self.player = None
 
         if playerNo==2:
             lives=self.player2.lives
@@ -526,26 +530,42 @@ class Window(QGraphicsScene):
     def level_advance(self):
         
         self.levelUP()
+        self.player.lives=3
+        if(self.numberOfPlayer==2):            
+            self.player2.lives=3
+            self.player.show()
+            self.player2.show()
+            self.playerOneCanShoot= True
+            self.playerTwoCanShoot = True
+            self.flag_playerOneDead = False
+            self.flag_playerTwoDead = False
 
-        # Set enemy start positions
         self.update_GUI_lives(self.numberOfPlayer)
+
+        # Postavljanje neprijatelja
         self.enemies = []
         self.enemies.append(Enemy())
         self.enemies[0].setPos(100, 50)
 
-
-        for i in range(0, 33):
+        for i in range(0, 55):
             self.enemies.append(Enemy())
             if i == 11:
                 self.enemies[i].setPos(self.enemies[0].x(), self.enemies[0].y() + 60)
                 continue
             if i == 22:
-                self.enemies[i].setPos(self.enemies[11].x(), self.enemies[11].y() + 60)
-                continue              
+                 self.enemies[i].setPos(self.enemies[11].x(), self.enemies[11].y() + 60)
+                 continue
+            if i == 33:
+                 self.enemies[i].setPos(self.enemies[22].x(), self.enemies[22].y() + 60)
+                 continue    
+            if i == 44:
+                 self.enemies[i].setPos(self.enemies[33].x(), self.enemies[33].y() + 60)
+                 continue         
             self.enemies[i].setPos(self.enemies[i - 1].x() + 60, self.enemies[i - 1].y())     
 
-        for i in range(0, 33):
+        for i in range(0, 55):
             self.addItem(self.enemies[i])
+
 
         self.moveEnemy = MoveEnemy()
         self.moveEnemy.calc_done.connect(self.move_enemy)
@@ -556,10 +576,17 @@ class Window(QGraphicsScene):
         self.enemyShoot.move_down.connect(self.move_enemy_laser)
         self.enemyShoot.collision_detected.connect(self.enemy_hit_player)
         self.enemyShoot.collision_detected_with_shield.connect(self.enemy_laser_shield_collide)
+        # Ubrzavanje lasera igraca i enemya
+        self.enemyShoot.enemyLaserSpeed += self.level_numberrr
+        self.moveEnemy.enemyMoveSpeed += self.level_numberrr
+
+        #print('Enemy move speed: {}'.format(self.moveEnemy.enemyMoveSpeed))
+        #print('Enemy laser speed: {}'.format(self.enemyShoot.enemyLaserSpeed))
+
         if self.numberOfPlayer == 1:
             self.enemyShoot.add_player(self.player)
         else:
-            # PROVERA AKO JE MRTAV NE IGRA VISE
+            # PROVERA AKO JE MRTAV NE IGRA VISE / A USTVARI IGRA PROCITANO IZ PROJEKTA, NEMA VEZE
             if self.player != None:
                 self.enemyShoot.add_player(self.player)
             if self.player2 != None:
@@ -571,7 +598,7 @@ class Window(QGraphicsScene):
         self.shootLaser.collision_detected.connect(self.player_laser_enemy_collide)
         self.shootLaser.start()
 
-        for i in range(0, 33):
+        for i in range(0, 55):
             self.moveEnemy.add_enemy(self.enemies[i])
             self.shootLaser.add_enemy(self.enemies[i])
             self.enemyShoot.add_enemy(self.enemies[i])
@@ -618,6 +645,8 @@ class Window(QGraphicsScene):
         
         self.tempWidget.setStyleSheet("background-color: rgba(255,255,255,0)")
         self.WidgetLEVEL = self.addWidget(self.tempWidget)
+
+        self.WidgetLEVEL.setZValue(20)
 
         self.timer=QTimer()
         self.timer.timeout.connect(self.levelUPdelete)
