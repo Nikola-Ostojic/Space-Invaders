@@ -87,27 +87,27 @@ class Window(QGraphicsScene):
             self.flag_playerTwoDead=False
 
         # Postavljanje neprijatelja
-        self.enemies = []
-        self.enemies.append(Enemy())
-        self.enemies[0].setPos(100, 50)
 
-        for i in range(0, 33):
-            self.enemies.append(Enemy())
-            if i == 11:
-                self.enemies[i].setPos(self.enemies[0].x(), self.enemies[0].y() + 60)
-                continue
-            if i == 22:
-                 self.enemies[i].setPos(self.enemies[11].x(), self.enemies[11].y() + 60)
-                 continue              
-            self.enemies[i].setPos(self.enemies[i - 1].x() + 60, self.enemies[i - 1].y())     
+        
 
-        for i in range(0, 33):
-            self.addItem(self.enemies[i])
+        #self.enemies = []
+        #self.enemies.append(Enemy())
+        #self.enemies[0].setPos(100, 50)
+#
+        #for i in range(0, 33):
+        #    self.enemies.append(Enemy())
+        #    if i == 11:
+        #        self.enemies[i].setPos(self.enemies[0].x(), self.enemies[0].y() + 60)
+        #        continue
+        #    if i == 22:
+        #         self.enemies[i].setPos(self.enemies[11].x(), self.enemies[11].y() + 60)
+        #         continue              
+        #    self.enemies[i].setPos(self.enemies[i - 1].x() + 60, self.enemies[i - 1].y())     
+#
+        #for i in range(0, 33):
+        #    self.addItem(self.enemies[i])
             
-        # Pomeranje neprijatelja
-        self.moveEnemy = MoveEnemy()
-        self.moveEnemy.calc_done.connect(self.move_enemy)
-        self.moveEnemy.start()
+        
 
         # Pucanje igraca
         self.shootLaser = PlayerShoot()
@@ -117,12 +117,8 @@ class Window(QGraphicsScene):
         self.playerOneCanShoot = True
         self.playerTwoCanShoot = True
 
-        # Pucanje protivnika
-        self.enemyShoot = EnemyShoot()
-        self.enemyShoot.can_shoot.connect(self.enemy_shoot_laser)
-        self.enemyShoot.move_down.connect(self.move_enemy_laser)
-        self.enemyShoot.collision_detected.connect(self.enemy_hit_player)
-        self.enemyShoot.collision_detected_with_shield.connect(self.enemy_laser_shield_collide)
+        self.createEnemies()
+        
         #self.enemyShoot.next_level.connect(self.next_level)
         if self.numberOfPlayer == 1:
             self.enemyShoot.add_player(self.player)
@@ -131,10 +127,7 @@ class Window(QGraphicsScene):
             self.enemyShoot.add_player(self.player2)
         self.enemyShoot.start()
 
-        for i in range(0, 33):
-            self.moveEnemy.add_enemy(self.enemies[i])
-            self.shootLaser.add_enemy(self.enemies[i])
-            self.enemyShoot.add_enemy(self.enemies[i])
+        
 
         #Dodavanje stitova
         self.shields = []
@@ -155,6 +148,8 @@ class Window(QGraphicsScene):
         self.view.show()
         self.view.setFixedSize(WINDOW_WIDTH,WINDOW_HEIGHT)
         self.setSceneRect(0,0,WINDOW_WIDTH,WINDOW_HEIGHT)
+
+        
 
         self.initUI(self.numberOfPlayer, self.level_numberrr)
             
@@ -212,13 +207,18 @@ class Window(QGraphicsScene):
             if len(self.enemies) == 1:                
                 if (self.numberOfPlayer == 1):
                     
-                    self.shootLaser.die()
-                    self.moveEnemy.die()
-                    self.enemyShoot.die()
-                    self.key_notifier.die()
-                    self.key_notifier.keys.clear()
-                    self.view.hide()
-                    self.next_level.emit(self.level_numberrr + 1)
+                    #self.shootLaser.die()
+                    #self.moveEnemy.die()
+                    #self.enemyShoot.die()
+                    #self.key_notifier.die()
+                    #self.key_notifier.keys.clear()
+                    #self.view.hide()
+                    self.createEnemies()
+                    self.level_numberrr += 1
+                    self.update_GUI_lives(self.numberOfPlayer)
+                    self.Widget.setZValue(1)
+                    #self= Window(self.numberOfPlayer, self.level_numberrr+1)
+                    #self.next_level.emit(self.level_numberrr + 1)
                 elif (self.numberOfPlayer == 2):
                     
                     self.shootLaser.die()
@@ -344,19 +344,19 @@ class Window(QGraphicsScene):
                     dx2 -= PLAYER_SPEED
             self.player2.setPos(playerPos2.x()+dx2, playerPos2.y())
 
-            if key == Qt.Key_L and self.player2:
+            if key == Qt.Key_0 and self.player2:
                 if self.playerTwoCanShoot:
                     laserLabel2 = Bullet()
                     self.player_shoot_laser(laserLabel2, playerPos2.x(), playerPos2.y())
 
     def initUI(self, numberOfPlayer, level_number):
         self.horizontalLayoutWidget = QWidget()
-        self.horizontalLayoutWidget.setGeometry(QtCore.QRect(13, 10, 871, 10))
+        self.horizontalLayoutWidget.setGeometry(QtCore.QRect(10, 10, 900, 10))
         self.horizontalLayoutWidget.setObjectName("horizontalLayoutWidget")
 
         self.horizontalLayout = QHBoxLayout(self.horizontalLayoutWidget)
         self.horizontalLayout.setContentsMargins(0, 0, 0, 0)
-        self.horizontalLayout.setSpacing(150)
+        self.horizontalLayout.setSpacing(230)
         self.horizontalLayout.setObjectName("horizontalLayout")
         self.horizontalLayout.setAlignment(Qt.AlignLeft)
 
@@ -386,7 +386,7 @@ class Window(QGraphicsScene):
         self.lab_level.setStyleSheet("color:yellow")
         self.horizontalLayout.addWidget(self.lab_level)
 
-        self.lab_level.setText("Level: " + str(level_number))
+        self.lab_level.setText("Level: " + str(self.level_numberrr))
 
         #Zivoti drugog igraca
         if self.numberOfPlayer==2:
@@ -449,6 +449,9 @@ class Window(QGraphicsScene):
                 self.player2.hide()
                 self.player2 = None
 
+        self.lab_levelText = "Level: {}".format(self.level_numberrr)
+        self.lab_level.setText(self.lab_levelText)
+
         if self.numberOfPlayer==1:
             if self.flag_playerOneDead==True:
                 self.gameOver()
@@ -498,4 +501,37 @@ class Window(QGraphicsScene):
 
 
         
-        
+    def createEnemies(self):
+        self.enemies = []
+        self.enemies.append(Enemy())
+        self.enemies[0].setPos(100, 50)
+
+        for i in range(0, 33):
+            self.enemies.append(Enemy())
+            if i == 11:
+                self.enemies[i].setPos(self.enemies[0].x(), self.enemies[0].y() + 60)
+                continue
+            if i == 22:
+                self.enemies[i].setPos(self.enemies[11].x(), self.enemies[11].y() + 60)
+                continue              
+            self.enemies[i].setPos(self.enemies[i - 1].x() + 60, self.enemies[i - 1].y())     
+
+        for i in range(0, 33):
+            self.addItem(self.enemies[i])
+
+        # Pomeranje neprijatelja
+        self.moveEnemy = MoveEnemy()
+        self.moveEnemy.calc_done.connect(self.move_enemy)
+        self.moveEnemy.start()
+
+        # Pucanje protivnika
+        self.enemyShoot = EnemyShoot()
+        self.enemyShoot.can_shoot.connect(self.enemy_shoot_laser)
+        self.enemyShoot.move_down.connect(self.move_enemy_laser)
+        self.enemyShoot.collision_detected.connect(self.enemy_hit_player)
+        self.enemyShoot.collision_detected_with_shield.connect(self.enemy_laser_shield_collide)
+
+        for i in range(0, 33):
+            self.moveEnemy.add_enemy(self.enemies[i])
+            self.shootLaser.add_enemy(self.enemies[i])
+            self.enemyShoot.add_enemy(self.enemies[i])

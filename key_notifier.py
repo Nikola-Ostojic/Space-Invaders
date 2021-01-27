@@ -65,9 +65,9 @@ class KeyNotifier(QObject):
                 if k == Qt.Key_Space:
                     if self.canPlayerOneShoot:
                         self.key_signal.emit(k)
-                        self.canPlayerOneShoot = False
+                        #self.canPlayerOneShoot = False
 
-                elif k == Qt.Key_L:
+                elif k == Qt.Key_0:
                     if self.canPlayerTwoShoot:
                         self.key_signal.emit(k)
                         self.canPlayerTwoShoot = False
