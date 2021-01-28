@@ -30,7 +30,7 @@ class Menu(QWidget):
 
         #Postavljanje logoa na vrh
         Name = QtWidgets.QLabel(self.centralwidget)
-        Name.setGeometry(QtCore.QRect(68, 48, 199, 51))
+        Name.setGeometry(QtCore.QRect(35, 30, 270, 101))
         font = QtGui.QFont()
         font.setFamily("Poplar Std")
         font.setPointSize(31)
@@ -41,18 +41,7 @@ class Menu(QWidget):
         Name.setAlignment(QtCore.Qt.AlignCenter)
         Name.setObjectName("Name")
         Name.setText("Space Invaders")
-        Name_2 = QtWidgets.QLabel(self.centralwidget)
-        Name_2.setGeometry(QtCore.QRect(15, 67, 199, 51))
-        font = QtGui.QFont()
-        font.setFamily("Roboto")
-        font.setPointSize(6)
-        font.setBold(True)
-        font.setWeight(75)
-        Name_2.setFont(font)
-        Name_2.setStyleSheet("color: rgb(244, 255, 41)")
-        Name_2.setAlignment(QtCore.Qt.AlignCenter)
-        Name_2.setObjectName("Name_2")
-        Name_2.setText("by D10S")
+        Name.setPixmap(QPixmap('assets/logo.png'))
         
 
         self.verticalLayoutWidget = QtWidgets.QWidget(self.centralwidget)
