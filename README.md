@@ -1,6 +1,10 @@
 # distribuirani
-Distribuirani Igrica
+Space Invaders game made using PyQt5. Single Player and Multiplayer.
 
-Space Invaders game made using PyQt5.
+# Built By
 
-Single Player and Multiplayer enabled.
+Python and PyQt5
+
+# Created By
+
+Marko Erdeljan, Nikola Ostojic, Dimitrije Bajagic and Milos Milovanovic for faculty course.
