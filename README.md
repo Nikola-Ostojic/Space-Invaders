@@ -1,5 +1,5 @@
 # distribuirani
-Space Invaders game made using PyQt5. Single Player and Multiplayer.
+Space Invaders game made by using PyQt5. Single Player and Multiplayer.
 
 # Built By
 
